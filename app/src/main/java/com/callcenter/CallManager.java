@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 public abstract class CallManager extends BroadcastReceiver {
 
     //The receiver will be recreated whenever android feels like it.  We need a static variable to remember data between instantiations
@@ -15,6 +18,7 @@ public abstract class CallManager extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;  //because the passed incoming is only valid in ringing
 
+    protected RequestQueue requestQueue;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -34,6 +38,9 @@ public abstract class CallManager extends BroadcastReceiver {
                 state = TelephonyManager.CALL_STATE_RINGING;
             }
 
+            if (requestQueue == null) {
+                requestQueue = Volley.newRequestQueue(context);
+            }
 
             onCallStateChanged(context, state, number);
         }

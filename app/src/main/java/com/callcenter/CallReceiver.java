@@ -39,6 +39,12 @@ public class CallReceiver extends CallManager {
     @Override
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
         Integer milliseconds = Utils.DELAY_TIME_TO_ANSWER * 1000;
+        requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return true;
+            }
+        });
         if(Utils.DEVICE_TYPE == 1) {
             try {
                 Thread.sleep(milliseconds);
@@ -74,7 +80,6 @@ public class CallReceiver extends CallManager {
     }
 
     private void sendReceiverReport(final Context context)  {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
 
         GPSTracker gps = new GPSTracker(context);
 
