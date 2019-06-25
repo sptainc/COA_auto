@@ -30,7 +30,8 @@ import java.util.Map;
 import java.util.Random;
 
 public class CallReceiver extends CallManager {
-    private long currentTime;
+    private Runnable r;
+    final Handler handler = new Handler();
 
     public void acceptCall(Context context)
     {
@@ -47,12 +48,13 @@ public class CallReceiver extends CallManager {
         int milliseconds = Utils.DELAY_TIME_TO_ANSWER * 1000;
 
         if(Utils.DEVICE_TYPE == 1) {
-            final Runnable r = new Runnable() {
+
+            r = new Runnable() {
                 public void run() {
                     acceptCall(ctx);
                 }
             };
-            final Handler handler = new Handler();
+
             handler.postDelayed(r, milliseconds);
         }
     }
@@ -81,7 +83,8 @@ public class CallReceiver extends CallManager {
     }
 
     private void sendReceiverReport(final Context context, final Date d)  {
-        RequestQueue requestQueue = new RequestQueue();
+        RequestQueue requestQueue =  Volley.newRequestQueue(context);
+
         GPSTracker gps = new GPSTracker(context);
         double latitude = gps.getLatitude();
         double longitude = gps.getLongitude();
@@ -103,13 +106,14 @@ public class CallReceiver extends CallManager {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        final Runnable r = new Runnable() {
+
+                        r = new Runnable() {
                             public void run() {
                                 sendReceiverReport(context, d);
                                 Log.d("AAAAAA", "report error" + d.getTime());
                             }
                         };
-                        final Handler handler = new Handler();
+
                         handler.postDelayed(r, 3000);
                     }
                 }
