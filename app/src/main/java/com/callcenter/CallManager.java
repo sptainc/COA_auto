@@ -18,7 +18,6 @@ public abstract class CallManager extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;  //because the passed incoming is only valid in ringing
 
-    protected RequestQueue requestQueue;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -36,10 +35,6 @@ public abstract class CallManager extends BroadcastReceiver {
                 state = TelephonyManager.CALL_STATE_OFFHOOK;
             } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 state = TelephonyManager.CALL_STATE_RINGING;
-            }
-
-            if (requestQueue == null) {
-                requestQueue = Volley.newRequestQueue(context);
             }
 
             onCallStateChanged(context, state, number);

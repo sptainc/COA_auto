@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class CallReceiver extends CallManager {
+    private long currentTime;
 
     public void acceptCall(Context context)
     {
@@ -41,15 +42,10 @@ public class CallReceiver extends CallManager {
 
     @Override
     protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
-        Log.d("AAAAAA", "start");
+        Log.d("AAAAAA", "call start");
 
-        Integer milliseconds = Utils.DELAY_TIME_TO_ANSWER * 1000;
-        requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-            @Override
-            public boolean apply(Request<?> request) {
-                return true;
-            }
-        });
+        int milliseconds = Utils.DELAY_TIME_TO_ANSWER * 1000;
+
         if(Utils.DEVICE_TYPE == 1) {
             final Runnable r = new Runnable() {
                 public void run() {
@@ -67,7 +63,8 @@ public class CallReceiver extends CallManager {
 
     @Override
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("AAAAAA", "report end");
+        Log.d("AAAAAA", "call end");
+
 
         if(Utils.DEVICE_TYPE == 1) {
             sendReceiverReport(ctx, start);
@@ -84,7 +81,8 @@ public class CallReceiver extends CallManager {
     }
 
     private void sendReceiverReport(final Context context, final Date d)  {
-         GPSTracker gps = new GPSTracker(context);
+        RequestQueue requestQueue = new RequestQueue();
+        GPSTracker gps = new GPSTracker(context);
         double latitude = gps.getLatitude();
         double longitude = gps.getLongitude();
 
