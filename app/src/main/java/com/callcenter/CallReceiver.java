@@ -1,5 +1,6 @@
 package com.callcenter;
 
+import android.os.Handler;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class CallReceiver extends CallManager {
 
@@ -37,7 +40,9 @@ public class CallReceiver extends CallManager {
     }
 
     @Override
-    protected void onIncomingCallStarted(Context ctx, String number, Date start) {
+    protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
+        Log.d("AAAAAA", "start");
+
         Integer milliseconds = Utils.DELAY_TIME_TO_ANSWER * 1000;
         requestQueue.cancelAll(new RequestQueue.RequestFilter() {
             @Override
@@ -46,13 +51,13 @@ public class CallReceiver extends CallManager {
             }
         });
         if(Utils.DEVICE_TYPE == 1) {
-            try {
-                Thread.sleep(milliseconds);
-                acceptCall(ctx);
-            }catch (Exception e){
-                e.printStackTrace();
-                acceptCall(ctx);
-            }
+            final Runnable r = new Runnable() {
+                public void run() {
+                    acceptCall(ctx);
+                }
+            };
+            final Handler handler = new Handler();
+            handler.postDelayed(r, milliseconds);
         }
     }
 
@@ -62,16 +67,15 @@ public class CallReceiver extends CallManager {
 
     @Override
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
+        Log.d("AAAAAA", "report end");
+
         if(Utils.DEVICE_TYPE == 1) {
-            sendReceiverReport(ctx);
+            sendReceiverReport(ctx, start);
         }
     }
 
     @Override
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
-        if(Utils.DEVICE_TYPE == 0) {
-            sendCallerReport(ctx);
-        }
 
     }
 
@@ -79,10 +83,8 @@ public class CallReceiver extends CallManager {
     protected void onMissedCall(Context ctx, String number, Date start) {
     }
 
-    private void sendReceiverReport(final Context context)  {
-
-        GPSTracker gps = new GPSTracker(context);
-
+    private void sendReceiverReport(final Context context, final Date d)  {
+         GPSTracker gps = new GPSTracker(context);
         double latitude = gps.getLatitude();
         double longitude = gps.getLongitude();
 
@@ -91,60 +93,26 @@ public class CallReceiver extends CallManager {
 
         int coa = Utils.DEVICE_TYPE;
 
-        final String url = "http://acomcorp.vn/Erl/active?imei=" + imei + "&gen="+gen +"&coa="+coa+"&lat="+ latitude +"&long=" + longitude;
+        final String url = "http://aacomcorp.vn/Erl/active?imei=" + imei + "&gen="+gen +"&coa="+coa+"&lat="+ latitude +"&long=" + longitude;
 
         StringRequest strRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("send report success: ", response+"");
+                        Log.d("AAAAAA", "report success");
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        sendReceiverReport(context);
-                    }
-                }
-        );
-
-        strRequest.setRetryPolicy(new DefaultRetryPolicy(
-                15000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        requestQueue.add(strRequest);
-    }
-
-    private void sendCallerReport(final Context context)  {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-
-        GPSTracker gps = new GPSTracker(context);
-
-        double latitude = gps.getLatitude();
-        double longitude = gps.getLongitude();
-
-        String imei = Utils.getSimSerialNumber(context);
-        String gen = Utils.getDeviceGeneration(context);
-
-        int coa = Utils.DEVICE_TYPE;
-
-        final String url = "http://acomcorp.vn/Erl/active?imei=" + imei + "&gen="+gen +"&coa="+coa+"&lat="+ latitude +"&long=" + longitude;
-
-        StringRequest strRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("send report success: ", response+"");
-
-                    }
-
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        sendReceiverReport(context);
+                        final Runnable r = new Runnable() {
+                            public void run() {
+                                sendReceiverReport(context, d);
+                                Log.d("AAAAAA", "report error" + d.getTime());
+                            }
+                        };
+                        final Handler handler = new Handler();
+                        handler.postDelayed(r, 3000);
                     }
                 }
         );
