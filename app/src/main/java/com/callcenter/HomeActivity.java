@@ -29,6 +29,8 @@ public class HomeActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Utils.RQC_ON_CONFIGURSTIONS_SUCCESS && resultCode == RESULT_OK) {
             setValueFromIntent();
+            TimerService.getInstance().stopTimerTask();
+            TimerService.getInstance().startTimer();
         }
     }
 
