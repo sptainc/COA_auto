@@ -5,12 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 
 public abstract class CallManager extends BroadcastReceiver {
-
     //The receiver will be recreated whenever android feels like it.  We need a static variable to remember data between instantiations
 
     private static int lastState = TelephonyManager.CALL_STATE_IDLE;

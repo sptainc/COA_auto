@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
-        <receiver android:name=".CallReceiver" >
+        <receiver android:name=".CallHandler" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditActivity" android:label="Edit configurations"/>
-
+        <service android:name=".TimerService" />
     </application>
 
 </manifest>

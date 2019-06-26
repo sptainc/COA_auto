@@ -2,17 +2,13 @@ package com.callcenter;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
-import android.telephony.CellLocation;
 
 public class Utils {
-    public static int DELAY_TIME_TO_ANSWER = 1; // seconds
+    public static int DELAY_TIME_TO_ANSWER = 0; // seconds
     public static int COUNTDOWN_TIMER = 15; // seconds
     public static int DEVICE_TYPE = 1; // receiver
 
-    public static  final int RQC_MAKE_NEW_CALL = 1;
-    public static  final int RQC_LISTEN_INCOMMING_CALL = 2;
-    public static  final int RQC_ON_CONFIGURSTIONS_SUCCESS = 2;
-
+    public static final int RQC_ON_CONFIGURSTIONS_SUCCESS = 2;
 
 
     public static String getSimSerialNumber(Context context) {
