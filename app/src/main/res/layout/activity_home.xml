@@ -6,7 +6,8 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".MainActivity">
+    android:background="#333"
+    tools:context=".HomeActivity">
 
     <TextView
         android:id="@+id/lbDeviceType"
@@ -34,15 +35,6 @@
 
     <TextView
         android:id="@+id/lbCountdownTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
-
-    <TextView
-        android:id="@+id/lbDelayAnswer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
@@ -83,14 +75,5 @@
         android:layout_gravity="left"
         android:layout_marginBottom="5dp"
         android:textColor="@color/textColor" />
-
-    <Button
-        android:id="@+id/btnEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="20dp"
-        android:text="Edit configurations"
-        android:layout_marginTop="20dp"/>
-
 
 </LinearLayout>

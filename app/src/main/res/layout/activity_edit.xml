@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".ConfigurationsActivity"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingHorizontal="20dp"
@@ -14,14 +14,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border"
-        android:padding="5dp"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current value"
+            android:layout_gravity="center"
+            android:textFontWeight="500"
+            android:textSize="16dp"
+            android:textColor="#333"/>
+        <TextView
+            android:id="@+id/lbCurrentType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device type: "
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="left"
+            android:textColor="#333"/>
+        <TextView
+            android:id="@+id/lbCurrentDelay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time delay: "
+            android:layout_gravity="left"
+            android:textColor="#333"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:padding="10dp"
         android:orientation="vertical"
         >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Select device type"
-            android:layout_gravity="left"
+            android:textSize="16dp"
+            android:textFontWeight="500"
+            android:layout_gravity="center"
             android:textColor="#333"/>
         <RadioGroup
             android:id="@+id/rdGroup"
@@ -47,7 +85,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Input countdown timer value"
+        android:text="Input delay timer value"
         android:layout_gravity="left"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"/>
@@ -58,25 +96,7 @@
         android:background="@drawable/border"
         android:layout_height="wrap_content"
         android:padding="7dp"
-        android:text="15"
-        android:inputType="number"
-        android:hint="Input value"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Input delay timer to auto answer"
-        android:layout_gravity="left"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
-
-    <EditText
-        android:id="@+id/txtDelayAnswer"
-        android:layout_width="match_parent"
-        android:background="@drawable/border"
-        android:layout_height="wrap_content"
-        android:padding="7dp"
-        android:text="4"
+        android:maxLength="4"
         android:inputType="number"
         android:hint="Input value"/>
 
@@ -90,14 +110,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirm"
-            android:layout_marginTop="10dp"
-            android:paddingHorizontal="20dp"
-            />
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
             android:layout_marginTop="10dp"
             android:paddingHorizontal="20dp"
             />

@@ -1,15 +1,19 @@
 package com.callcenter;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
-public class GPSTracker extends Service implements LocationListener {
+public class HelperService extends Service implements LocationListener {
+    private final Context mContext;
+
     // flag for GPS status
     boolean isGPSEnabled = false;
 
@@ -32,13 +36,14 @@ public class GPSTracker extends Service implements LocationListener {
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
-    public GPSTracker() {
+    public HelperService(Context context) {
+        this.mContext = context;
         getLocation();
     }
 
     public Location getLocation() {
         try {
-            locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager)mContext.getSystemService(LOCATION_SERVICE);
 
             // getting GPS status
             isGPSEnabled = locationManager
@@ -90,6 +95,37 @@ public class GPSTracker extends Service implements LocationListener {
         } catch (Exception e) {
         }
         return location;
+    }
+
+    public String getSimSerialNumber() {
+        TelephonyManager mTelephonyManager = (TelephonyManager)
+                mContext.getSystemService(Context.TELEPHONY_SERVICE);
+
+        return mTelephonyManager.getSimSerialNumber();
+    }
+
+    public String getSimPhoneNumber() {
+        TelephonyManager mTelephonyManager = (TelephonyManager)
+                mContext.getSystemService(Context.TELEPHONY_SERVICE);
+
+        return mTelephonyManager.getLine1Number();
+    }
+
+
+    public String getDeviceGeneration() {
+        TelephonyManager mTelephonyManager = (TelephonyManager)
+                mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        int networkType = mTelephonyManager.getNetworkType();
+        switch (networkType) {
+            case TelephonyManager.NETWORK_TYPE_GPRS:
+            case TelephonyManager.NETWORK_TYPE_EDGE:
+            case TelephonyManager.NETWORK_TYPE_CDMA:
+            case TelephonyManager.NETWORK_TYPE_1xRTT:
+            case TelephonyManager.NETWORK_TYPE_IDEN:
+                return "2G";
+            default:
+                return "3G";
+        }
     }
 
     public double getLatitude() {

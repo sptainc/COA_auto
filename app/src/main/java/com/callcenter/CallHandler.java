@@ -25,6 +25,7 @@ public class CallHandler extends CallManager {
     }
 
     public static void endCall(Context context) {
+
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         try {
             Class c = Class.forName(tm.getClass().getName());
@@ -43,43 +44,38 @@ public class CallHandler extends CallManager {
     }
 
     @Override
-    protected void onIncomingCallStarted(Context ctx, String number, Date start) {
-        Log.d("AAAAAA", "incoming call started");
-        if (Utils.DEVICE_TYPE == 1) {
+    protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
+        Log.v("AAAAAA", "incoming call started");
+
+        if (TimerService.DEVICE_TYPE == 1) {
             acceptCall(ctx);
-            timerService.stopTimerTask();
         }
     }
 
 
     @Override
-    protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("AAAAAA", "incoming call ended");
-
-        if (Utils.DEVICE_TYPE == 1) {
-            timerService.startTimer();
-        }
+    protected void onIncomingCallEnded(Context ctx, String number, final Date start,final Date end) {
+        Log.v("AAAAAA", "incoming call ended");
     }
 
     @Override
-    protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
-        Log.d("AAAAAA", "outgoing call started");
-        if (Utils.DEVICE_TYPE == 0) {
-            timerService.stopTimerTask();
-        }
+    protected void onOutgoingCallStarted(final Context ctx, String number, Date start ) {
+        Log.v("AAAAAA", "outgoing call started");
     }
 
     @Override
-    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("AAAAAA", "outgoing call ended");
+    protected void onOutgoingCallEnded(final Context ctx, String number, final Date start, final Date end) {
+        Log.v("AAAAAA", "outgoing call ended");
 
-        if (Utils.DEVICE_TYPE == 0) {
-            ApiUtils.sendDispatcherReport(ctx, number,  start.getTime(), end.getTime());
+        if (TimerService.DEVICE_TYPE == 0) {
+            timerService.sendCallerReport(ctx, start.getTime(), end.getTime());
         }
     }
 
     @Override
     protected void onMissedCall(Context ctx, String number, Date start) {
+        // missed incoming call
+        Log.v("AAAAAA", "missed call");
     }
 
 

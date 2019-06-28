@@ -14,10 +14,16 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Call Center"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <receiver android:name=".CallHandler" >
+            <intent-filter android:priority="100">
+                <action android:name="android.intent.action.PACKAGE_INSTALL"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -26,14 +32,14 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".HomeActivity" android:label="Call Center Information">
+        <activity android:name=".HomeActivity" android:label="Call Center" />
+        <activity android:name=".ConfigurationsActivity" android:label="Call Center">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditActivity" android:label="Edit configurations"/>
         <service android:name=".TimerService" />
     </application>
 
