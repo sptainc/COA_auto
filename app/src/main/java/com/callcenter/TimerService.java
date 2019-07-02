@@ -74,7 +74,7 @@ public class TimerService extends Service implements LocationListener {
         //TODO do something useful
         TelephonyManager mTelephonyManager = (TelephonyManager)
                 mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        Constants.IMEI = mTelephonyManager.getSimSerialNumber();
+        Constants.IMEI = mTelephonyManager.getDeviceId();
         Constants.PHONE_NUMBER = mTelephonyManager.getLine1Number();
         Constants.GENERATION = getDeviceGeneration(mTelephonyManager.getNetworkType());
 

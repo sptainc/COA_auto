@@ -70,7 +70,7 @@ public class HomeActivity extends Activity {
 
 
         lbPhoneNumber.setText("Phone number: " + phone);
-        lbSimImei.setText("Sim IMEI number: " + imei);
+        lbSimImei.setText("Phone IMEI: " + imei);
         lbDeviceGen.setText("Device Generation: " + gen);
         lbLatitude.setText("Latitude: " + latitude);
         lbLongitude.setText("Longitude: " + longitude);
