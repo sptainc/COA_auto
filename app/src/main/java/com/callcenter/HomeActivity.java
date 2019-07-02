@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 public class HomeActivity extends Activity {
+
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context ctxt, Intent intent) {
@@ -19,38 +21,46 @@ public class HomeActivity extends Activity {
         }
     };
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
         addViews();
-
-         this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
-        Intent service = new Intent(HomeActivity.this, TimerService.class);
-
-        startService(service);
     }
 
-//    public void onPause() {
-//        super.onPause();
-//        this.unregisterReceiver(mBatInfoReceiver);
-//    }
-//
-//    public void onResume() {
-//        super.onResume();
-//        registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.unregisterReceiver(this.mBatInfoReceiver);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(this.mBatInfoReceiver);
+    }
 
 
     private void addViews() {
-        HelperService gps = new HelperService(HomeActivity.this);
-        double latitude = gps.getLatitude();
-        double longitude = gps.getLongitude();
-        String imei = gps.getSimSerialNumber();
-        String phone = gps.getSimPhoneNumber();
-        String gen = gps.getDeviceGeneration();
+        double latitude = Constants.LAT;
+        double longitude = Constants.LONG;
+        String imei = Constants.IMEI;
+        String phone = Constants.PHONE_NUMBER;
+        String gen = Constants.GENERATION;
+
+
+        Log.v("AAAAA NUMBER", Constants.PHONE_NUMBER);
 
         TextView lbPhoneNumber = findViewById(R.id.lbPhoneNumber);
         TextView lbSimImei = findViewById(R.id.lbSimImei);

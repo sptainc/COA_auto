@@ -1,10 +1,15 @@
 package com.callcenter;
 
 import java.util.Date;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.CallLog;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 
 public abstract class CallManager extends BroadcastReceiver {
@@ -17,6 +22,19 @@ public abstract class CallManager extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;  //because the passed incoming is only valid in ringing
 
+    private String getCallDetails(Context context) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            Uri contacts = CallLog.Calls.CONTENT_URI;
+            Cursor managedCursor = context.getContentResolver().query(
+                    contacts, null, null, null, null);
+            int duration1 = managedCursor.getColumnIndex( CallLog.Calls.DURATION);
+            return duration1 + "";
+        }catch (Exception e) {
+            return  "0";
+        }
+
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -25,15 +43,17 @@ public abstract class CallManager extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
         } else {
-            String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+            String stateStr = intent
+                    .getExtras()
+                    .getString(TelephonyManager.EXTRA_STATE);
             String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
             int state = 0;
-            if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 state = TelephonyManager.CALL_STATE_IDLE;
-            } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            } else if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
                 state = TelephonyManager.CALL_STATE_OFFHOOK;
-            } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            } else if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 state = TelephonyManager.CALL_STATE_RINGING;
             }
 
@@ -51,7 +71,7 @@ public abstract class CallManager extends BroadcastReceiver {
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
     }
 
-    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
+    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end, String totalTime) {
     }
 
     protected void onMissedCall(Context ctx, String number, Date start) {
@@ -94,7 +114,8 @@ public abstract class CallManager extends BroadcastReceiver {
                 } else if (isIncoming) {
                     onIncomingCallEnded(context, savedNumber, callStartTime, new Date());
                 } else {
-                    onOutgoingCallEnded(context, savedNumber, callStartTime, new Date());
+
+                    onOutgoingCallEnded(context, savedNumber, callStartTime, new Date(), getCallDetails(context));
                 }
                 break;
         }

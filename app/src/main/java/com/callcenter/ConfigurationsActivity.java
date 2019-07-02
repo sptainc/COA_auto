@@ -24,6 +24,10 @@ public class ConfigurationsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        Intent service = new Intent(ConfigurationsActivity.this, TimerService.class);
+
+        startService(service);
+
         addViews();
 
         addListener();
@@ -38,8 +42,8 @@ public class ConfigurationsActivity extends Activity {
         int type = Integer.valueOf(_type);
         int delay = Integer.valueOf(_delay);
 
-        TimerService.DEVICE_TYPE = type;
-        TimerService.DELAY_TIME = delay * 1000;
+        Constants.DEVICE_TYPE = type;
+        Constants.DELAY_TIME = delay * 1000;
 
         final RadioButton rdCaller = findViewById(R.id.rdCaller);
         final RadioButton rdReceiver = findViewById(R.id.rdReceiver);
@@ -89,8 +93,8 @@ public class ConfigurationsActivity extends Activity {
                     i.putExtra("type", type);
 
                     // storage for current session
-                    TimerService.DEVICE_TYPE = Integer.valueOf(type);
-                    TimerService.DELAY_TIME = Integer.valueOf(delay) * 1000;
+                    Constants.DEVICE_TYPE = Integer.valueOf(type);
+                    Constants.DELAY_TIME = Integer.valueOf(delay) * 1000;
 
                     // storage for next session
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ConfigurationsActivity.this);

@@ -25,9 +25,8 @@ public class CallHandler extends CallManager {
     }
 
     public static void endCall(Context context) {
-
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         try {
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             Class c = Class.forName(tm.getClass().getName());
             Method m = c.getDeclaredMethod("getITelephony");
             m.setAccessible(true);
@@ -47,7 +46,7 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
         Log.v("AAAAAA", "incoming call started");
 
-        if (TimerService.DEVICE_TYPE == 1) {
+        if (Constants.DEVICE_TYPE == 1) {
             acceptCall(ctx);
         }
     }
@@ -64,10 +63,10 @@ public class CallHandler extends CallManager {
     }
 
     @Override
-    protected void onOutgoingCallEnded(final Context ctx, String number, final Date start, final Date end) {
-        Log.v("AAAAAA", "outgoing call ended");
+    protected void onOutgoingCallEnded(final Context ctx, String number, final Date start, final Date end, String totalTime) {
+        Log.v("AAAAAA", "outgoing call ended " + totalTime);
 
-        if (TimerService.DEVICE_TYPE == 0) {
+        if (Constants.DEVICE_TYPE == 0) {
             timerService.sendCallerReport(ctx, start.getTime(), end.getTime());
         }
     }

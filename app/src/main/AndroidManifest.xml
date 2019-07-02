@@ -32,14 +32,15 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".HomeActivity" android:label="Call Center" />
-        <activity android:name=".ConfigurationsActivity" android:label="Call Center">
+        <activity android:name=".HomeActivity" android:label="Call Center"  />
+        <activity android:name=".ConfigurationsActivity" android:label="Call Center" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service android:name=".TimerService" />
     </application>
 
