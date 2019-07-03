@@ -4,25 +4,33 @@ import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import java.util.Date;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.CallLog;
+import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 public class TimerService extends Service implements LocationListener {
@@ -50,6 +58,8 @@ public class TimerService extends Service implements LocationListener {
     private static TimerService instance = null;
     private static Timer timer;
     private static TimerTask timerTask;
+    private static Handler handler = new Handler();
+    private static Runnable runable;
 
 
     public TimerService() { };
@@ -66,7 +76,8 @@ public class TimerService extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        startTimer();
+        startInterval();
+        // startTimer();
     }
 
     @Override
@@ -92,7 +103,7 @@ public class TimerService extends Service implements LocationListener {
     private TimerTask initializeTimerTask() {
         return new TimerTask() {
             public void run() {
-                if (CallManager.IS_OUTGOING_CALL || CallManager.IS_INCOMING_CALL) {
+                if (!CallManager.IS_IDLE) {
                     return;
                 }
 
@@ -103,6 +114,36 @@ public class TimerService extends Service implements LocationListener {
                 }
             }
         };
+    }
+
+    public void startInterval() {
+        if(runable != null) {
+            handler.removeCallbacks(runable);
+        }
+
+        runable = new Runnable() {
+            private long time = 0;
+
+            @Override
+            public void run() {
+                time += Constants.DELAY_TIME;
+
+                if (Constants.DEVICE_TYPE == 0) {
+                    sendRequestNumber();
+                } else {
+                    sendReceiverReport();
+                }
+
+                handler.postDelayed(this, Constants.DELAY_TIME);
+            }
+        };
+        handler.postDelayed(runable, Constants.DELAY_TIME);
+    }
+
+    public void stopInterval() {
+        if(runable != null) {
+            handler.removeCallbacks(runable);
+        }
     }
 
     public void startTimer() {
@@ -137,7 +178,6 @@ public class TimerService extends Service implements LocationListener {
         }
     }
 
-
     public void sendRequestNumber() {
         double latitude = Constants.LAT;
         double longitude = Constants.LONG;
@@ -157,6 +197,7 @@ public class TimerService extends Service implements LocationListener {
 
                 String result = response.body();
 
+
                 // if server throws number and call time
                 // result is format: $s1:09xxxxxxxx;t1:540;t2:30
                 if (!TextUtils.isEmpty(result)) {
@@ -171,9 +212,11 @@ public class TimerService extends Service implements LocationListener {
 
                         String arr[] = _trimmed.split(";");
 
-                        Log.v("AAAAAA", "data trimmed: " +  Arrays.toString(arr));
+                        Log.v("AAAAAA", "data trimmed: " + Arrays.toString(arr));
 
                         if (arr.length >= 2) {
+                            EventBus.getDefault().post(new MessageEvent(result));
+
                             String number = arr[0];
                             String time = arr[1];
 
@@ -183,20 +226,17 @@ public class TimerService extends Service implements LocationListener {
                                 Constants.DELAY_TIME = delay;
                             }
 
-
                             final Intent intent = new Intent(Intent.ACTION_CALL);
+
                             intent.setData(Uri.parse("tel:" + number));
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mContext.startActivity(intent);
 
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    CallHandler.endCall(TimerService.this);
-                                }
-                            }, Integer.valueOf(time) * 1000);
+                            // set new value for next call duration
+                            Constants.OUTGOING_CALL_DURATION = Integer.valueOf(time);
 
-                            stopTimer();
+                            // cancel interval, restart interval after send caller report success
+                            stopInterval();
                         }
                     } catch (Exception e) {
                         Log.d("EEEEEEEE", e.toString());
@@ -232,7 +272,8 @@ public class TimerService extends Service implements LocationListener {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.v("AAAAAA", "send caller report success " + response);
-                startTimer();
+                startInterval();
+                // startTimer();
             }
 
             @Override
@@ -244,7 +285,7 @@ public class TimerService extends Service implements LocationListener {
                     public void run() {
                         sendCallerReport(TimerService.this, start, end);
                     }
-                }, Constants.DELAY_TIME / 5);
+                }, Constants.DELAY_TIME);
             }
         });
     }
@@ -276,7 +317,7 @@ public class TimerService extends Service implements LocationListener {
 
     public Location getLocation() {
         try {
-            locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
             // getting GPS status
             isGPSEnabled = locationManager
@@ -342,7 +383,7 @@ public class TimerService extends Service implements LocationListener {
         if (location.getAccuracy() != 0.0f
                 && (location.getAccuracy() < bestAccuracy) || bestAccuracy == -1f) {
             locationManager.removeUpdates(this);
-        }else {
+        } else {
             Constants.LAT = location.getLatitude();
             Constants.LONG = location.getLongitude();
         }
@@ -359,6 +400,4 @@ public class TimerService extends Service implements LocationListener {
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
-
-
 }

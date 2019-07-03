@@ -22,15 +22,40 @@ public class ConfigurationsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit);
 
         Intent service = new Intent(ConfigurationsActivity.this, TimerService.class);
-
         startService(service);
 
-        addViews();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ConfigurationsActivity.this);
 
-        addListener();
+        SharedPreferences.Editor editor = preferences.edit();
+
+        getStorage(preferences);
+
+        String firstTime = preferences.getString("firstTime", "Y");
+        if (firstTime.equals("Y")) {
+            setContentView(R.layout.activity_edit);
+            addViews();
+            addListener();
+
+            editor.putString("firstTime", "N");
+            editor.apply();
+        } else {
+            Intent i = new Intent(ConfigurationsActivity.this, HomeActivity.class);
+            startActivity(i);
+            finish();
+        }
+    }
+
+    private void getStorage(SharedPreferences preferences) {
+        String _type = preferences.getString("type", "0");
+        String _delay = preferences.getString("delay", "15");
+
+        int type = Integer.valueOf(_type);
+        int delay = Integer.valueOf(_delay);
+
+        Constants.DEVICE_TYPE = type;
+        Constants.DELAY_TIME = delay * 1000;
     }
 
     private void addViews() {

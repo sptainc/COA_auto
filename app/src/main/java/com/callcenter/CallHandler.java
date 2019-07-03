@@ -63,8 +63,8 @@ public class CallHandler extends CallManager {
     }
 
     @Override
-    protected void onOutgoingCallEnded(final Context ctx, String number, final Date start, final Date end, String totalTime) {
-        Log.v("AAAAAA", "outgoing call ended " + totalTime);
+    protected void onOutgoingCallEnded(final Context ctx, String number, final Date start, final Date end) {
+        Log.v("AAAAAA", "outgoing call ended ");
 
         if (Constants.DEVICE_TYPE == 0) {
             timerService.sendCallerReport(ctx, start.getTime(), end.getTime());

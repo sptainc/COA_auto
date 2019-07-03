@@ -9,8 +9,22 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 
 public class HomeActivity extends Activity {
+
+    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        TextView tv = findViewById(R.id.lbOutgoingDetail);
+        tv.setText("Response data: " + event.message);
+    }
+
 
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
         @Override
@@ -46,10 +60,17 @@ public class HomeActivity extends Activity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        this.unregisterReceiver(this.mBatInfoReceiver);
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
 
 
     private void addViews() {
@@ -59,35 +80,23 @@ public class HomeActivity extends Activity {
         String phone = Constants.PHONE_NUMBER;
         String gen = Constants.GENERATION;
 
-
-        Log.v("AAAAA NUMBER", Constants.PHONE_NUMBER);
-
         TextView lbPhoneNumber = findViewById(R.id.lbPhoneNumber);
         TextView lbSimImei = findViewById(R.id.lbSimImei);
         TextView lbDeviceGen = findViewById(R.id.lbDeviceGen);
         TextView lbLatitude = findViewById(R.id.lbSimLat);
         TextView lbLongitude = findViewById(R.id.lbSimLng);
+        TextView lbDeviceType = findViewById(R.id.lbDeviceType);
+        TextView lbCountdownTimer = findViewById(R.id.lbCountdownTimer);
 
+        lbDeviceType.setText("Device type: " + Constants.DEVICE_TYPE);
+        lbCountdownTimer.setText("Delay timer (second): " + Constants.DELAY_TIME / 1000);
 
         lbPhoneNumber.setText("Phone number: " + phone);
         lbSimImei.setText("Phone IMEI: " + imei);
         lbDeviceGen.setText("Device Generation: " + gen);
         lbLatitude.setText("Latitude: " + latitude);
         lbLongitude.setText("Longitude: " + longitude);
-
-        setValueFromIntent();
     }
 
-    private void setValueFromIntent() {
-        TextView lbDeviceType = findViewById(R.id.lbDeviceType);
-        TextView lbCountdownTimer = findViewById(R.id.lbCountdownTimer);
 
-        Intent i = getIntent();
-        String type = i.getStringExtra("type");
-        String delay = i.getStringExtra("delay");
-
-
-        lbDeviceType.setText("Device type: " + type);
-        lbCountdownTimer.setText("Delay timer (second): " + delay);
-    }
 }

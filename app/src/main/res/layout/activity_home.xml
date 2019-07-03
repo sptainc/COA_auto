@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#333"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="20dp"
-    android:background="#333"
     tools:context=".HomeActivity">
 
     <TextView
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor" />
 
     <TextView
         android:id="@+id/lbDeviceGen"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor" />
 
     <TextView
         android:id="@+id/lbPinLevel"
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor" />
 
     <TextView
         android:id="@+id/lbCountdownTimer"
@@ -49,7 +49,7 @@
         android:layout_gravity="left"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor" />
 
     <TextView
         android:id="@+id/lbSimLng"
@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor" />
 
 
     <TextView
@@ -76,4 +76,11 @@
         android:layout_marginBottom="5dp"
         android:textColor="@color/textColor" />
 
+
+    <TextView
+        android:id="@+id/lbOutgoingDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/textColor" />
 </LinearLayout>
