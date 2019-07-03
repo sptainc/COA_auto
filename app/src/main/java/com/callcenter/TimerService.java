@@ -56,8 +56,6 @@ public class TimerService extends Service implements LocationListener {
     protected LocationManager locationManager;
 
     private static TimerService instance = null;
-    private static Timer timer;
-    private static TimerTask timerTask;
     private static Handler handler = new Handler();
     private static Runnable runable;
 
@@ -77,7 +75,6 @@ public class TimerService extends Service implements LocationListener {
         super.onCreate();
         mContext = this;
         startInterval();
-        // startTimer();
     }
 
     @Override
@@ -100,21 +97,6 @@ public class TimerService extends Service implements LocationListener {
         return null;
     }
 
-    private TimerTask initializeTimerTask() {
-        return new TimerTask() {
-            public void run() {
-                if (!CallManager.IS_IDLE) {
-                    return;
-                }
-
-                if (Constants.DEVICE_TYPE == 0) {
-                    sendRequestNumber();
-                } else {
-                    sendReceiverReport();
-                }
-            }
-        };
-    }
 
     public void startInterval() {
         if(runable != null) {
@@ -122,12 +104,8 @@ public class TimerService extends Service implements LocationListener {
         }
 
         runable = new Runnable() {
-            private long time = 0;
-
             @Override
             public void run() {
-                time += Constants.DELAY_TIME;
-
                 if (Constants.DEVICE_TYPE == 0) {
                     sendRequestNumber();
                 } else {
@@ -144,24 +122,6 @@ public class TimerService extends Service implements LocationListener {
         if(runable != null) {
             handler.removeCallbacks(runable);
         }
-    }
-
-    public void startTimer() {
-        timer = new Timer();
-        timerTask = initializeTimerTask();
-        timer.schedule(timerTask, Constants.DELAY_TIME, Constants.DELAY_TIME);
-    }
-
-    public void stopTimer() {
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-    }
-
-    public void resetTimer() {
-        stopTimer();
-        startTimer();
     }
 
 

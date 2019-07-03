@@ -48,17 +48,21 @@ public class CallHandler extends CallManager {
 
         if (Constants.DEVICE_TYPE == 1) {
             acceptCall(ctx);
+            TimerService.getInstance().stopInterval();
         }
     }
 
 
     @Override
-    protected void onIncomingCallEnded(Context ctx, String number, final Date start,final Date end) {
+    protected void onIncomingCallEnded(Context ctx, String number, final Date start, final Date end) {
         Log.v("AAAAAA", "incoming call ended");
+        if (Constants.DEVICE_TYPE == 1) {
+            timerService.sendReceiverReport();
+        }
     }
 
     @Override
-    protected void onOutgoingCallStarted(final Context ctx, String number, Date start ) {
+    protected void onOutgoingCallStarted(final Context ctx, String number, Date start) {
         Log.v("AAAAAA", "outgoing call started");
     }
 

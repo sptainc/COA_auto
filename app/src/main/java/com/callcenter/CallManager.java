@@ -103,7 +103,6 @@ public abstract class CallManager extends BroadcastReceiver {
                 break;
             case TelephonyManager.CALL_STATE_IDLE:
                 IS_IDLE = true;
-
                 //Went to idle-  this is the end of a call.  What type depends on previous state(s)
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     //Ring but no pickup-  a miss
@@ -111,7 +110,6 @@ public abstract class CallManager extends BroadcastReceiver {
                 } else if (isIncoming) {
                     onIncomingCallEnded(context, savedNumber, callStartTime, new Date());
                 } else {
-
                     onOutgoingCallEnded(context, savedNumber, callStartTime, new Date());
                 }
                 break;
