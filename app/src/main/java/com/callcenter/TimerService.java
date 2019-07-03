@@ -4,29 +4,34 @@ import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import java.util.Date;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.CallLog;
-import android.telecom.TelecomManager;
+import android.telephony.CellIdentityGsm;
+import android.telephony.CellIdentityLte;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,6 +92,23 @@ public class TimerService extends Service implements LocationListener {
         Constants.GENERATION = getDeviceGeneration(mTelephonyManager.getNetworkType());
 
         getLocation();
+
+        ArrayList<String> arr = new ArrayList<String>();
+
+        arr.add("MCC: " + mContext.getResources().getConfiguration().mcc);
+        arr.add("MNC: " + mContext.getResources().getConfiguration().mnc);
+
+//        arr.add(mTelephonyManager.getDataState() + "");
+//        arr.add(mTelephonyManager.getNetworkType() + "");
+//        arr.add(mTelephonyManager.getSimState() + "");
+//        arr.add(mTelephonyManager.getNetworkOperatorName() + "");
+//        arr.add(mTelephonyManager.getNetworkOperator() + "");
+//        arr.add(mTelephonyManager.getSimOperatorName() + "");
+//        arr.add(mTelephonyManager.getSimOperator() + "");
+//        arr.add(mTelephonyManager.getPhoneType() + "");
+//        arr.add(mTelephonyManager.getNetworkCountryIso() + "");
+
+        Log.d("INFORMATION", arr.toString());
 
         return Service.START_NOT_STICKY;
     }
@@ -174,7 +196,7 @@ public class TimerService extends Service implements LocationListener {
 
                         Log.v("AAAAAA", "data trimmed: " + Arrays.toString(arr));
 
-                        if (arr.length >= 2) {
+                        if (arr.length >= 2 && !TextUtils.isEmpty(arr[0]) && !TextUtils.isEmpty(arr[1])) {
                             EventBus.getDefault().post(new MessageEvent(result));
 
                             String number = arr[0];
@@ -220,7 +242,7 @@ public class TimerService extends Service implements LocationListener {
         String imei = Constants.IMEI;
         String gen = Constants.GENERATION;
 
-        double time = (end - start) / 1000;
+        int time = (int)(end - start) / 1000;
 
         String url = "?imei=" + imei + "&gen=" + gen + "&coa=0&lat=" + latitude + "&long=" + longitude + "&t=" + time;
 
@@ -330,8 +352,9 @@ public class TimerService extends Service implements LocationListener {
                     }
                 }
             }
-
+            Log.v("GPS_SUCCESS", location.toString());
         } catch (Exception e) {
+            Log.v("GPS_ERROR", e.toString());
         }
         return location;
     }

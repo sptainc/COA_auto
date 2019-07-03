@@ -5,14 +5,8 @@ import java.util.Date;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Handler;
-import android.provider.CallLog;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.widget.Toast;
 
 
 public abstract class CallManager extends BroadcastReceiver {
