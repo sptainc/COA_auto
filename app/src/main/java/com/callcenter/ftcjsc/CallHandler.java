@@ -57,7 +57,7 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallEnded(Context ctx, String number, final Date start, final Date end) {
         Log.v("AAAAAA", "incoming call ended");
         if (Constants.DEVICE_TYPE == 1) {
-            timerService.sendReceiverReport();
+            TimerService.getInstance().startInterval();
         }
     }
 
