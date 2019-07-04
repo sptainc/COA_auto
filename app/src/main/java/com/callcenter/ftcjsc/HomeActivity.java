@@ -9,7 +9,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.callcenter.R;
+import com.callcenter.ftcjsc.R;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.callcenter.R;
+import com.callcenter.ftcjsc.R;
 
 public class ConfigurationsActivity extends Activity {
     private RadioButton rdCaller;
