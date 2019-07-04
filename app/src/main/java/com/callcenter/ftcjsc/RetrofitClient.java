@@ -1,4 +1,4 @@
-package com.callcenter;
+package com.callcenter.ftcjsc;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;

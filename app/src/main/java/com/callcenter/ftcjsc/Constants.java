@@ -1,4 +1,4 @@
-package com.callcenter;
+package com.callcenter.ftcjsc;
 
 public class Constants {
     public static String IMEI = "";

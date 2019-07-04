@@ -1,4 +1,4 @@
-package com.callcenter;
+package com.callcenter.ftcjsc;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.callcenter"
+    package="com.callcenter.ftcjsc"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-sdk tools:overrideLibrary="com.google.android.gms.all"/>
     <uses-permission android:name="android.permission.CALL_PHONE" />
