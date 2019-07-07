@@ -1,4 +1,4 @@
-package com.callcenter.ftcjsc;
+package com.callcenter.ftcjsc1;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -9,7 +9,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.callcenter.ftcjsc.R;
+import com.callcenter.ftcjsc1.R;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

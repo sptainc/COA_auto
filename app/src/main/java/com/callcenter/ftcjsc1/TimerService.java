@@ -1,4 +1,4 @@
-package com.callcenter.ftcjsc;
+package com.callcenter.ftcjsc1;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -13,11 +13,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -70,11 +72,38 @@ public class TimerService extends Service implements LocationListener {
         startInterval();
     }
 
+    private static GsmCellLocation getCellLocBySlot(Context context, String predictedMethodName, int slotID) {
+
+        GsmCellLocation cloc = null;
+        TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            Class<?> telephonyClass = Class.forName(telephony.getClass().getName());
+            Class<?>[] parameter = new Class[1];
+            parameter[0] = int.class;
+            Method getSimID = telephonyClass.getMethod(predictedMethodName, parameter);
+
+            Object[] obParameter = new Object[1];
+            obParameter[0] = slotID;
+            Object ob_phone = getSimID.invoke(telephony, obParameter);
+
+            if (ob_phone != null) {
+                cloc = (GsmCellLocation) ob_phone;
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cloc;
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //TODO do something useful
         TelephonyManager mTelephonyManager = (TelephonyManager)
                 mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        GsmCellLocation gsmCellLocation = (GsmCellLocation)mTelephonyManager.getCellLocation();
+
         Constants.IMEI = mTelephonyManager.getDeviceId();
         Constants.PHONE_NUMBER = mTelephonyManager.getLine1Number();
         Constants.GENERATION = getDeviceGeneration(mTelephonyManager.getNetworkType());
@@ -83,10 +112,13 @@ public class TimerService extends Service implements LocationListener {
 
         ArrayList<String> arr = new ArrayList<String>();
 
-        arr.add("MCC: " + mContext.getResources().getConfiguration().mcc);
-        arr.add("MNC: " + mContext.getResources().getConfiguration().mnc);
+        arr.add("MCC: " + mTelephonyManager.getNetworkOperator().substring(0,3));
+        arr.add("MNC: " + mTelephonyManager.getNetworkOperator().substring(3));
 
-//        arr.add(mTelephonyManager.getDataState() + "");
+        arr.add("LAC (GSM Location Area Code): " + gsmCellLocation.getLac());
+        arr.add("CID (GSM Cell ID): " + gsmCellLocation.getCid());
+        arr.add("PSC: " + gsmCellLocation.getPsc());
+
 //        arr.add(mTelephonyManager.getNetworkType() + "");
 //        arr.add(mTelephonyManager.getSimState() + "");
 //        arr.add(mTelephonyManager.getNetworkOperatorName() + "");
