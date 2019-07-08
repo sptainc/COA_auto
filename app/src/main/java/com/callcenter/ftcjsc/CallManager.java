@@ -1,4 +1,4 @@
-package com.callcenter.ftcjsc1;
+package com.callcenter.ftcjsc;
 
 import java.util.Date;
 

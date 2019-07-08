@@ -1,7 +1,6 @@
-package com.callcenter.ftcjsc1;
+package com.callcenter.ftcjsc;
 
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
