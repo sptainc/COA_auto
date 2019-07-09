@@ -285,7 +285,7 @@ public class TimerService extends Service implements LocationListener {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        sendCallerReport(TimerService.this, start, end);
+                        sendCallerReport(context, start, end);
                     }
                 }, Constants.DELAY_TIME);
             }
