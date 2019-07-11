@@ -46,9 +46,10 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
         Log.v("AAAAAA", "incoming call started");
 
+        timerService.stopInterval();
+
         if (Constants.DEVICE_TYPE == 1) {
             acceptCall(ctx);
-            TimerService.getInstance().stopInterval();
         }
     }
 
@@ -57,13 +58,14 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallEnded(Context ctx, String number, final Date start, final Date end) {
         Log.v("AAAAAA", "incoming call ended");
         if (Constants.DEVICE_TYPE == 1) {
-            TimerService.getInstance().startInterval();
+            timerService.startInterval();
         }
     }
 
     @Override
     protected void onOutgoingCallStarted(final Context ctx, String number, Date start) {
         Log.v("AAAAAA", "outgoing call started");
+        timerService.stopInterval();
     }
 
     @Override
@@ -79,13 +81,7 @@ public class CallHandler extends CallManager {
     protected void onMissedCall(Context ctx, String number, Date start) {
         // missed incoming call
         Log.v("AAAAAA", "missed call");
-        if (Constants.DEVICE_TYPE == 1) {
-            TimerService.getInstance().startInterval();
-        }
-
-        if (Constants.DEVICE_TYPE == 0) {
-            timerService.sendCallerReport(ctx, start.getTime(), start.getTime());
-        }
+        timerService.startInterval();
     }
 
 

@@ -148,9 +148,6 @@ public class TimerService extends Service implements LocationListener {
         runable = new Runnable() {
             @Override
             public void run() {
-                if(!CallManager.IS_IDLE) {
-                    return;
-                }
                 if (Constants.DEVICE_TYPE == 0) {
                     sendRequestNumber();
                 } else {
@@ -239,9 +236,6 @@ public class TimerService extends Service implements LocationListener {
 
                             // set new value for next call duration
                             Constants.OUTGOING_CALL_DURATION = Integer.valueOf(time);
-
-                            // cancel interval, restart interval after send caller report success
-                            stopInterval();
                         }
                     } catch (Exception e) {
                         Log.d("EEEEEEEE", e.toString());
