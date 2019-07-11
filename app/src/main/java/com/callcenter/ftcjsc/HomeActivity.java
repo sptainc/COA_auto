@@ -9,7 +9,9 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.callcenter.ftcjsc.R;
 
@@ -83,6 +85,7 @@ public class HomeActivity extends Activity {
         String imei = Constants.IMEI;
         String phone = Constants.PHONE_NUMBER;
         String gen = Constants.GENERATION;
+
 
         TextView lbSimImei = findViewById(R.id.lbSimImei);
         TextView lbDeviceGen = findViewById(R.id.lbDeviceGen);
