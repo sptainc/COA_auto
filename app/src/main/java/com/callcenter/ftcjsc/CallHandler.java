@@ -79,6 +79,13 @@ public class CallHandler extends CallManager {
     protected void onMissedCall(Context ctx, String number, Date start) {
         // missed incoming call
         Log.v("AAAAAA", "missed call");
+        if (Constants.DEVICE_TYPE == 1) {
+            TimerService.getInstance().startInterval();
+        }
+
+        if (Constants.DEVICE_TYPE == 0) {
+            timerService.sendCallerReport(ctx, start.getTime(), start.getTime());
+        }
     }
 
 
