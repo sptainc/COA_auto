@@ -148,6 +148,9 @@ public class TimerService extends Service implements LocationListener {
         runable = new Runnable() {
             @Override
             public void run() {
+                if(!CallManager.IS_IDLE) {
+                    return;
+                }
                 if (Constants.DEVICE_TYPE == 0) {
                     sendRequestNumber();
                 } else {
