@@ -186,7 +186,7 @@ public class TimerService extends Service implements LocationListener {
         String imei = Constants.IMEI;
         String gen = Constants.GENERATION;
 
-        String url = "?imei=" + imei + "&gen=" + gen + "&coa=0&lat=" + latitude + "&long=" + longitude + "&t=0";
+        String url = "?imei=" + imei + "&gen=" + gen + "&coa=0&lat=" + latitude + "&long=" + longitude + "&t=0"  + "&d=android";
 
         Log.v("AAAAAA", "send request number start " + url);
 
@@ -224,7 +224,7 @@ public class TimerService extends Service implements LocationListener {
 
                             if (arr.length >= 3) {
                                 String _delay = arr[2];
-                                int delay = TextUtils.isEmpty(_delay) || _delay == null ? 15 : Integer.valueOf(_delay) * 1000;
+                                int delay = TextUtils.isEmpty(_delay) || _delay == null ? 15 * 1000 : Integer.valueOf(_delay) * 1000;
                                 Constants.DELAY_TIME = delay;
                             }
 
@@ -261,7 +261,7 @@ public class TimerService extends Service implements LocationListener {
 
         int time = (int)(end - start) / 1000;
 
-        String url = "?imei=" + imei + "&gen=" + gen + "&coa=0&lat=" + latitude + "&long=" + longitude + "&t=" + time;
+        String url = "?imei=" + imei + "&gen=" + gen + "&coa=0&lat=" + latitude + "&long=" + longitude + "&t=" + time + "&d=android";
 
         Log.v("AAAAAA", "send caller report start " + url);
 
@@ -295,7 +295,7 @@ public class TimerService extends Service implements LocationListener {
         String imei = Constants.IMEI;
         String gen = Constants.GENERATION;
 
-        String url = "?imei=" + imei + "&gen=" + gen + "&coa=1&lat=" + latitude + "&long=" + longitude;
+        String url = "?imei=" + imei + "&gen=" + gen + "&coa=1&lat=" + latitude + "&long=" + longitude + "&d=android";
 
         Log.v("AAAAAA", "send receiver report start " + url);
 
