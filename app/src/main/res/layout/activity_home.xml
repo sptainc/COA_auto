@@ -6,8 +6,23 @@
     android:background="#333"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="20dp"
-    tools:context=".ftcjsc.HomeActivity">
+    android:paddingHorizontal="20dp"
+    tools:context=".HomeActivity">
+
+
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:background="@null"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/settings"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/lbDeviceType"
@@ -91,4 +106,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textColor="@color/textColor" />
+    </LinearLayout>
 </LinearLayout>

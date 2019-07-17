@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +27,7 @@ public class ConfigurationsActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         Intent service = new Intent(ConfigurationsActivity.this, TimerService.class);
+
         startService(service);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ConfigurationsActivity.this);
@@ -35,7 +37,12 @@ public class ConfigurationsActivity extends Activity {
         getStorage(preferences);
 
         String firstTime = preferences.getString("firstTime", "Y");
-        if (firstTime.equals("Y")) {
+
+        Intent in = getIntent();
+
+        String isEdit = in.getStringExtra("edit");
+
+        if (firstTime.equals("Y") || !TextUtils.isEmpty(isEdit)) {
             setContentView(R.layout.activity_edit);
             addViews();
             addListener();
@@ -130,8 +137,24 @@ public class ConfigurationsActivity extends Activity {
                     editor.putString("delay", delay);
                     editor.apply();
 
-                    startActivity(i);
-                    finish();
+                    Intent in = getIntent();
+
+                    String isEdit = in.getStringExtra("edit");
+
+
+
+                    if (TextUtils.isEmpty(isEdit)) {
+                        startActivity(i);
+                        finish();
+                    }else {
+                        TimerService instance = TimerService.getInstance();
+                        instance.stopInterval();
+                        instance.startInterval();
+
+                        setResult(Activity.RESULT_OK);
+
+                        finish();
+                    }
                 }
             }
         });
