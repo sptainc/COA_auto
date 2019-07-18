@@ -58,7 +58,7 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallEnded(Context ctx, String number, final Date start, final Date end) {
         Log.v("AAAAAA", "incoming call ended");
         if (Constants.DEVICE_TYPE == 1) {
-            timerService.startInterval();
+            timerService.startInterval(ctx);
         }
     }
 
@@ -81,7 +81,7 @@ public class CallHandler extends CallManager {
     protected void onMissedCall(Context ctx, String number, Date start) {
         // missed incoming call
         Log.v("AAAAAA", "missed call");
-        timerService.startInterval();
+        timerService.startInterval(ctx);
     }
 
 

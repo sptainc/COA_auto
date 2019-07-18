@@ -142,7 +142,7 @@ public class HomeActivity extends Activity {
             addViews();
             TimerService instance = TimerService.getInstance();
             instance.stopInterval();
-            instance.startInterval();
+            instance.startInterval(null);
         }
     }
 }

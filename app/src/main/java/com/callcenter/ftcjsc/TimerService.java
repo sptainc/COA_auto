@@ -69,7 +69,7 @@ public class TimerService extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        startInterval();
+        startInterval(mContext);
     }
 
     private static GsmCellLocation getCellLocBySlot(Context context, String predictedMethodName, int slotID) {
@@ -140,7 +140,11 @@ public class TimerService extends Service implements LocationListener {
     }
 
 
-    public void startInterval() {
+    public void startInterval(Context ctx) {
+        if(ctx != null) {
+            mContext = ctx;
+        }
+
         if(runable != null) {
             handler.removeCallbacks(runable);
         }
@@ -271,7 +275,7 @@ public class TimerService extends Service implements LocationListener {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.v("AAAAAA", "send caller report success " + response);
-                startInterval();
+                startInterval(mContext);
             }
 
             @Override
