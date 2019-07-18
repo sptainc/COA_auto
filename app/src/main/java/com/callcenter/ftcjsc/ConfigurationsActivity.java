@@ -147,12 +147,7 @@ public class ConfigurationsActivity extends Activity {
                         startActivity(i);
                         finish();
                     }else {
-                        TimerService instance = TimerService.getInstance();
-                        instance.stopInterval();
-                        instance.startInterval();
-
                         setResult(Activity.RESULT_OK);
-
                         finish();
                     }
                 }

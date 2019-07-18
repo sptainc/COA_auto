@@ -69,7 +69,6 @@ public class TimerService extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        startInterval();
     }
 
     private static GsmCellLocation getCellLocBySlot(Context context, String predictedMethodName, int slotID) {
@@ -216,7 +215,7 @@ public class TimerService extends Service implements LocationListener {
 
                         Log.v("AAAAAA", "data trimmed: " + Arrays.toString(arr));
 
-                        if (arr.length >= 2 && !TextUtils.isEmpty(arr[0]) && !TextUtils.isEmpty(arr[1])) {
+                        if (arr.length >= 2 && !TextUtils.isEmpty(arr[0]) && !TextUtils.isEmpty(arr[1]) && CallManager.IS_IDLE) {
                             EventBus.getDefault().post(new MessageEvent(result));
 
                             String number = arr[0];
@@ -272,7 +271,6 @@ public class TimerService extends Service implements LocationListener {
             public void onResponse(Call<String> call, Response<String> response) {
                 Log.v("AAAAAA", "send caller report success " + response);
                 startInterval();
-                // startTimer();
             }
 
             @Override

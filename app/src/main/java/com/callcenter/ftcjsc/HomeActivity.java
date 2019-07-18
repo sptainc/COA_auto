@@ -51,6 +51,8 @@ public class HomeActivity extends Activity {
         mContext = this;
         setContentView(R.layout.activity_home);
 
+        TimerService.getInstance().startInterval();
+
         this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         addViews();
@@ -140,6 +142,9 @@ public class HomeActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1 && resultCode == RESULT_OK) {
             addViews();
+            TimerService instance = TimerService.getInstance();
+            instance.stopInterval();
+            instance.startInterval();
         }
     }
 }

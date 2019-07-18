@@ -44,7 +44,7 @@ public class CallHandler extends CallManager {
 
     @Override
     protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
-        Log.v("AAAAAA", "incoming call started");
+        Log.v("AAAAAA", "incoming call started, deviceType: " + Constants.DEVICE_TYPE);
 
         timerService.stopInterval();
 
