@@ -69,6 +69,7 @@ public class TimerService extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        startInterval();
     }
 
     private static GsmCellLocation getCellLocBySlot(Context context, String predictedMethodName, int slotID) {
