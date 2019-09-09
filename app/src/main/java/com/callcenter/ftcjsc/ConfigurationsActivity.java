@@ -1,12 +1,19 @@
 package com.callcenter.ftcjsc;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,17 +22,14 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.callcenter.ftcjsc.R;
-
-public class ConfigurationsActivity extends Activity {
+public class ConfigurationsActivity extends AppCompatActivity {
     private RadioButton rdCaller;
     private EditText txtTimer;
     private Button btnConfirm;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static final int MY_PERMISSIONS_REQUEST_CODE = 99;
 
+    private  void goMainView () {
         Intent service = new Intent(ConfigurationsActivity.this, TimerService.class);
 
         startService(service);
@@ -54,6 +58,34 @@ public class ConfigurationsActivity extends Activity {
             startActivity(i);
             finish();
         }
+    }
+
+    public boolean checkLocationPermission() {
+        if (
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(ConfigurationsActivity.this,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.CALL_PHONE
+                    },
+                    MY_PERMISSIONS_REQUEST_CODE);
+            return false;
+        } else {
+            goMainView();
+            return true;
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        checkLocationPermission();
     }
 
     private void getStorage(SharedPreferences preferences) {
@@ -147,12 +179,45 @@ public class ConfigurationsActivity extends Activity {
                         startActivity(i);
                         finish();
                     }else {
-                        setResult(Activity.RESULT_OK);
+                        setResult(AppCompatActivity.RESULT_OK);
                         finish();
                     }
                 }
             }
         });
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String permissions[],
+            int[] grantResults) {
+        if(requestCode == MY_PERMISSIONS_REQUEST_CODE) {
+            for(int i = 0; i< grantResults.length; i++) {
+                if(grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                            .setTitle("Authorize permission before use")
+                            .setMessage("Please go to Settings => Applications => CallCenter and authorize the permissions before use")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    Intent intent = new Intent();
+                                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                    intent.setData(uri);
+                                    startActivity(intent);
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+            }
+            goMainView();
+
+        }
 
     }
 }

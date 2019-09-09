@@ -2,6 +2,7 @@ package com.callcenter.ftcjsc;
 
 import android.content.Context;
 import android.content.Intent;
+import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,15 +14,20 @@ import java.util.Date;
 public class CallHandler extends CallManager {
     private TimerService timerService = TimerService.getInstance();
 
-    public void acceptCall(Context context) {
+
+    public void acceptCall(final Context context) {
+        Log.v("AAAAAA", "here");
+
         Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
         buttonUp.putExtra(Intent.EXTRA_KEY_EVENT,
                 new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
         try {
             context.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
         } catch (Exception e) {
+            Log.v("AAAAAA", e.toString());
             e.printStackTrace();
         }
+
     }
 
     public static void endCall(Context context) {
@@ -46,10 +52,13 @@ public class CallHandler extends CallManager {
     protected void onIncomingCallStarted(final Context ctx, String number, Date start) {
         Log.v("AAAAAA", "incoming call started, deviceType: " + Constants.DEVICE_TYPE);
 
+        TelephonyManager tm = (TelephonyManager) ctx
+                .getSystemService(Context.TELEPHONY_SERVICE);
+
         timerService.stopInterval();
 
         if (Constants.DEVICE_TYPE == 1) {
-            acceptCall(ctx);
+             acceptCall(ctx);
         }
     }
 
