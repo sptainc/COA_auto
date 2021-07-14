@@ -1,8 +1,7 @@
-package com.callcenter.ftcjsc;
+package com.callcenter.ftcjsc.services;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-
 
 public class RetrofitClient {
 

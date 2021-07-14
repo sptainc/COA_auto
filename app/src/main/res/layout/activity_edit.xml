@@ -3,19 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ConfigurationsActivity"
-    android:gravity="center"
+    tools:context=".ConfigActivity"
     android:orientation="vertical"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="5dp"
+    android:padding="20dp"
+    android:background="@color/magnetic"
     >
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="2dp"
+        android:padding="10dp"
         android:orientation="vertical"
         >
         <TextView
@@ -50,9 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="2dp"
-        android:layout_marginTop="5dp"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         >
         <TextView
@@ -74,33 +70,32 @@
                 android:text="Caller device"
                 android:textColor="#333"
                 android:checked="true"
+                android:outlineAmbientShadowColor="@color/magnetic"
+                android:outlineSpotShadowColor="@color/button"
+                android:enabled="false"
                 />
             <RadioButton
                 android:id="@+id/rdReceiver"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#333"
+                android:enabled="false"
                 android:text="Receiver device"/>
         </RadioGroup>
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Input delay timer value"
-        android:layout_gravity="left"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"/>
 
     <EditText
         android:id="@+id/txtTimerValue"
         android:layout_width="match_parent"
         android:background="@drawable/border"
         android:layout_height="wrap_content"
-        android:padding="7dp"
+        android:padding="10dp"
         android:maxLength="4"
         android:inputType="number"
-        android:hint="Input value"/>
+        android:textColor="@color/magnetic"
+        android:layout_marginTop="20dp"
+        android:enabled="false"
+        android:hint="input new delay time to send request"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -114,6 +109,8 @@
             android:text="Confirm"
             android:layout_marginTop="10dp"
             android:paddingHorizontal="20dp"
+            android:textColor="@color/white"
+            android:background="@color/button"
             />
     </LinearLayout>
 

@@ -3,108 +3,176 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#333"
-    android:gravity="center"
     android:orientation="vertical"
-    android:paddingHorizontal="20dp"
     tools:context=".HomeActivity">
 
-
-    <ImageButton
-        android:id="@+id/btnSettings"
-        android:background="@null"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginTop="5dp"
-        android:src="@drawable/settings"/>
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/header" />
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/magnetic"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:padding="20dp">
 
-    <TextView
-        android:id="@+id/lbDeviceType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lbDeviceType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/device_type"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lbDeviceGen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lbDeviceGen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/gen"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lbPinLevel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lbPinLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/pin_percent"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lbCountdownTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lbCountdownTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/delay"
+            android:textColor="@color/textColor" />
+
+<!--        <TextView-->
+<!--            android:id="@+id/lbPhone"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="left"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/phone"-->
+<!--            android:textColor="@color/textColor" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/lbSimLat"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="left"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/lat"-->
+<!--            android:textColor="@color/textColor" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/lbSimLng"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="left"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/lng"-->
+<!--            android:textColor="@color/textColor" />-->
 
 
-    <TextView
-        android:id="@+id/lbSimLat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
-
-    <TextView
-        android:id="@+id/lbSimLng"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lbSimImei"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/imei"
+            android:textColor="@color/textColor" />
 
 
-    <TextView
-        android:id="@+id/lbSimImei"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lblMCC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/mcc"
+            android:textColor="@color/textColor" />
 
+        <TextView
+            android:id="@+id/lblMNC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/mnc"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lblMCCMNC"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lblLAC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/lac"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lblLACCIDPSC"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lblCID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/cid"
+            android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/lbOutgoingDetail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/textColor" />
+        <TextView
+            android:id="@+id/lblPSC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/psc"
+            android:textColor="@color/textColor" />
+
+        <TextView
+            android:id="@+id/lbOutgoingDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/textColor" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Input default value to send to server"
+            android:textColor="@color/textColor" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            >
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkbox"
+                android:textColor="@color/white"
+                android:checked="false"
+                android:layout_marginLeft="5dp"
+                />
+            <EditText
+                android:id="@+id/txtUserInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="15dp"
+                android:paddingHorizontal="5dp"
+                android:backgroundTint="@android:color/transparent"
+                android:textColor="@color/magnetic"
+                android:enabled="false"
+                android:hint="input here"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

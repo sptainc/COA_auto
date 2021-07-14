@@ -1,60 +1,64 @@
 package com.callcenter.ftcjsc;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
+import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
+import android.preference.PreferenceManager;
+import androidx.appcompat.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.callcenter.ftcjsc.R;
+import com.callcenter.ftcjsc.services.MessageEvent;
+import com.callcenter.ftcjsc.services.TimerService;
+import com.callcenter.ftcjsc.utils.Constants;
+import com.callcenter.ftcjsc.utils.RequestCodes;
+import com.callcenter.ftcjsc.utils.StorageKeys;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 
-public class HomeActivity extends Activity {
-    private Context mContext;
+public class HomeActivity extends AppCompatActivity {
+//    private LocationManager mLocationManager;
 
     // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
         TextView tv = findViewById(R.id.lbOutgoingDetail);
-        tv.setText("Response data: " + event.message);
+        tv.setText(getResources().getString(R.string.outgoing_detail) + " " + event.message);
     }
 
-
-    private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
+    private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context ctxt, Intent intent) {
+        public void onReceive(Context _, Intent intent) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
             TextView lbPinLevel = findViewById(R.id.lbPinLevel);
-            lbPinLevel.setText("Pin level: " + String.valueOf(level) + "%");
+            lbPinLevel.setText(getResources().getString(R.string.pin_percent) + level + "%");
         }
     };
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
         setContentView(R.layout.activity_home);
 
-        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+//        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Intent service = new Intent(this, TimerService.class);
+        startService(service);
 
+//        checkGpsEnabled();
+//        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.MIN_TIME_BW_UPDATES, Constants.MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerGPS);
         addViews();
-
         addListener();
     }
 
@@ -82,55 +86,51 @@ public class HomeActivity extends Activity {
         super.onStop();
     }
 
-
-
     private void addViews() {
-        double latitude = Constants.LAT;
-        double longitude = Constants.LONG;
-        String imei = Constants.IMEI;
-        String phone = Constants.PHONE_NUMBER;
-        String gen = Constants.GENERATION;
+//        ((TextView)findViewById(R.id.lbSimLat)).setText("" + getResources().getText(R.string.lat) + Constants.getLatitude());
+//        ((TextView)findViewById(R.id.lbSimLng)).setText("" + getResources().getText(R.string.lng) + Constants.getLongitude());
 
-
-        TextView lbSimImei = findViewById(R.id.lbSimImei);
-        TextView lbDeviceGen = findViewById(R.id.lbDeviceGen);
-        TextView lbLatitude = findViewById(R.id.lbSimLat);
-        TextView lbLongitude = findViewById(R.id.lbSimLng);
-        TextView lbDeviceType = findViewById(R.id.lbDeviceType);
-        TextView lbCountdownTimer = findViewById(R.id.lbCountdownTimer);
-        TextView lblMCCMNC = findViewById(R.id.lblMCCMNC);
-        TextView lblLACCIDPSC = findViewById(R.id.lblLACCIDPSC);
-
-        lbDeviceType.setText("Device type: " + Constants.DEVICE_TYPE);
-        lbCountdownTimer.setText("Delay timer (second): " + Constants.DELAY_TIME / 1000);
-
-        lbSimImei.setText("Phone IMEI: " + imei);
-        lbDeviceGen.setText("Device Generation: " + gen);
-        lbLatitude.setText("Latitude: " + latitude);
-        lbLongitude.setText("Longitude: " + longitude);
-
-        TelephonyManager mTelephonyManager = (TelephonyManager)
-                mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        GsmCellLocation gsmCellLocation = (GsmCellLocation)mTelephonyManager.getCellLocation();
-
-        lblMCCMNC.setText("MCC: " + mTelephonyManager.getNetworkOperator().substring(0,3) + " - MNC: " + mTelephonyManager.getNetworkOperator().substring(3));
-        String dataExten = "LAC (GSM Location Area Code): " + gsmCellLocation.getLac();
-        dataExten += "\n CID (GSM Cell ID): " + gsmCellLocation.getCid();
-        dataExten += "\n PSC: " + gsmCellLocation.getPsc();
-
-        lblLACCIDPSC.setText( dataExten );
-
-
-
+        ((TextView)findViewById(R.id.lbDeviceType)).setText(getResources().getText(R.string.device_type) + Constants.getLabel(Constants.getDeviceType()));
+        ((TextView)findViewById(R.id.lbCountdownTimer)).setText("" + getResources().getText(R.string.delay) + Constants.getDelayTime());
+//        ((TextView)findViewById(R.id.lbPhone)).setText(getResources().getText(R.string.phone) + Constants.getPhoneNumber());
+        ((TextView)findViewById(R.id.lbSimImei)).setText(getResources().getText(R.string.imei) + Constants.getImei());
+        ((TextView)findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
+        ((TextView)findViewById(R.id.lblMCC)).setText(getResources().getText(R.string.mcc) + Constants.getMcc());
+        ((TextView)findViewById(R.id.lblMNC)).setText(getResources().getText(R.string.mnc) + Constants.getMnc());
+        ((TextView)findViewById(R.id.lblLAC)).setText("" + getResources().getText(R.string.lac) + Constants.getLac());
+        ((TextView)findViewById(R.id.lblCID)).setText("" + getResources().getText(R.string.cid) + Constants.getCid());
+        ((TextView)findViewById(R.id.lblPSC)).setText("" + getResources().getText(R.string.psc) + Constants.getPsc());
+        ((EditText)findViewById(R.id.txtUserInput)).setText(Constants.getUserInput());
     }
 
     private void addListener() {
-        findViewById(R.id.btnSettings).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnConfig).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(HomeActivity.this, ConfigurationsActivity.class);
-                i.putExtra("edit", "true");
-                startActivityForResult(i, 1);
+                Intent i = new Intent(HomeActivity.this, ConfigActivity.class);
+                startActivityForResult(i, RequestCodes.onConfigurationsSuccess);
+            }
+        });
+        final EditText et = findViewById(R.id.txtUserInput);
+
+        findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final CheckBox mapView = (CheckBox) view;
+                boolean checked = mapView.isChecked();
+                if(checked) {
+                    et.setEnabled(true);
+                    et.requestFocus();
+                }else {
+                    String text = et.getText().toString();
+                    text = TextUtils.isEmpty(text) ? "" : text;
+                    et.setEnabled(false);
+                    Constants.setUserInput(text);
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString(StorageKeys.user_input.toString(), text);
+                    editor.apply();
+                }
             }
         });
     }
@@ -138,11 +138,10 @@ public class HomeActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK) {
+        Log.d("onActivityResult", "requestCode: " + requestCode + ", resultCode: " + resultCode);
+        if (resultCode == RESULT_OK && requestCode == RequestCodes.onConfigurationsSuccess) {
+            TimerService.getInstance().startRunnable(null);
             addViews();
-            TimerService instance = TimerService.getInstance();
-            instance.stopInterval();
-            instance.startInterval(null);
         }
     }
 }

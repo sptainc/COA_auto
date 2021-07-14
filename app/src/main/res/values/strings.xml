@@ -1,3 +1,23 @@
 <resources>
+    <string name="base_url">http://ibsmanage.com/Active/</string>
     <string name="app_name">Call Center</string>
+    <string name="pin_percent">Pin percent:&#160;</string>
+    <string name="outgoing_detail">Outgoing detail:&#160;</string>
+    <string name="lac">LAC:&#160;</string>
+    <string name="cid">CID:&#160;</string>
+    <string name="psc">PSC:&#160;</string>
+    <string name="mcc">MCC:&#160;</string>
+    <string name="mnc">MNC:&#160;</string>
+    <string name="imei">IMEI:&#160;</string>
+    <string name="lng">Longitude:&#160;</string>
+    <string name="lat">Latitude:&#160;</string>
+    <string name="delay">Delay timer (seconds):&#160;</string>
+    <string name="gen">Generation:&#160;</string>
+    <string name="device_type">Device type:&#160;</string>
+    <string name="phone">Phone number:&#160;</string>
+    <string name="sms_per_status">SMS:&#160;</string>
+    <string name="phone_per_status">Phone permission</string>
+    <string name="location_per_status">Location permission</string>
+    <string name="allow">ALLOW</string>
+    <string name="callDetection">CallDetection</string>
 </resources>
