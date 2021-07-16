@@ -83,12 +83,21 @@
 
 
         <TextView
-            android:id="@+id/lbSimImei"
+            android:id="@+id/lbIdm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginBottom="5dp"
-            android:text="@string/imei"
+            android:text="@string/idm"
+            android:textColor="@color/textColor" />
+
+        <TextView
+            android:id="@+id/lbIds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="5dp"
+            android:text="@string/ids"
             android:textColor="@color/textColor" />
 
 

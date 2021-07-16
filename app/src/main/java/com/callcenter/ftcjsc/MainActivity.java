@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,11 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
-
-import android.util.Log;
 import android.view.View;
-
-import com.callcenter.ftcjsc.utils.Constants;
 import com.callcenter.ftcjsc.utils.RequestCodes;
 import com.callcenter.ftcjsc.utils.Utils;
 
@@ -61,24 +55,24 @@ public class MainActivity extends AppCompatActivity {
     private void addViewsAndPreload() {
         final int granted = PackageManager.PERMISSION_GRANTED;
         final String readPhoneState = Manifest.permission.READ_PHONE_STATE;
-//        final String fineLocation = Manifest.permission.ACCESS_FINE_LOCATION;
+        final String fineLocation = Manifest.permission.ACCESS_FINE_LOCATION;
         boolean phoneGranted = false;
-//        boolean locationGranted = false;
+        boolean locationGranted = false;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
              phoneGranted = checkSelfPermission(readPhoneState) == granted;
-//             locationGranted = checkSelfPermission(fineLocation) == granted;
+             locationGranted = checkSelfPermission(fineLocation) == granted;
         }else {
             phoneGranted = true;
-//            locationGranted = true;
+            locationGranted = true;
         }
 
         (findViewById(R.id.btnPhonePermission)).setVisibility(phoneGranted ? View.GONE : View.VISIBLE);
         (findViewById(R.id.imgPhonePermission)).setVisibility(phoneGranted ? View.VISIBLE : View.GONE);
 
-//        (findViewById(R.id.btnLocationPermission)).setVisibility(locationGranted ? View.GONE : View.VISIBLE);
-//        (findViewById(R.id.imgLocationPermission)).setVisibility(locationGranted ? View.VISIBLE : View.GONE);
+        (findViewById(R.id.btnLocationPermission)).setVisibility(locationGranted ? View.GONE : View.VISIBLE);
+        (findViewById(R.id.imgLocationPermission)).setVisibility(locationGranted ? View.VISIBLE : View.GONE);
 
-        if(phoneGranted) {
+        if(phoneGranted && locationGranted) {
             Utils.updateConstants(this);
 //            Location location = ((LocationManager) getSystemService(LOCATION_SERVICE)).getLastKnownLocation(LocationManager.GPS_PROVIDER);
 //            Constants.setLocation(((LocationManager) getSystemService(LOCATION_SERVICE)).getLastKnownLocation(LocationManager.GPS_PROVIDER));
@@ -91,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private void addListeners() {
         final int denied = PackageManager.PERMISSION_DENIED;
         final String readPhoneState = Manifest.permission.READ_PHONE_STATE;
-//        final String fineLocation = Manifest.permission.ACCESS_FINE_LOCATION;
+        final String fineLocation = Manifest.permission.ACCESS_FINE_LOCATION;
 
         findViewById(R.id.btnPhonePermission).setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -107,19 +101,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        findViewById(R.id.btnLocationPermission).setOnClickListener(new View.OnClickListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.M)
-//            @Override
-//            public void onClick(View v) {
-//                if(checkSelfPermission(fineLocation) == denied && !shouldShowRequestPermissionRationale(fineLocation)) {
-//                    openSettingsToEnablePermissions("Location");
-//                }else {
-//                    requestPermissions(new String[]{
-//                            fineLocation
-//                    }, RequestCodes.requestPermissions);
-//                }
-//            }
-//        });
+        findViewById(R.id.btnLocationPermission).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                if(checkSelfPermission(fineLocation) == denied && !shouldShowRequestPermissionRationale(fineLocation)) {
+                    openSettingsToEnablePermissions("Location");
+                }else {
+                    requestPermissions(new String[]{
+                            fineLocation
+                    }, RequestCodes.requestPermissions);
+                }
+            }
+        });
     }
 
     @Override

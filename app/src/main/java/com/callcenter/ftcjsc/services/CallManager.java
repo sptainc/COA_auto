@@ -60,7 +60,7 @@ public class CallManager extends BroadcastReceiver {
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
         Log.d("IncomingCall ended", "send report");
-        TimerService.getInstance().sendCallReport(ctx, start.getTime() - end.getTime());
+        TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
@@ -69,7 +69,7 @@ public class CallManager extends BroadcastReceiver {
 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
         Log.d("OutgoingCall ended", "number = " + number + ", duration = " + (end.getTime() - start.getTime()));
-        TimerService.getInstance().sendCallReport(ctx, start.getTime() - end.getTime());
+        TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 
     protected void onMissedCall(Context ctx, String number, Date start) {

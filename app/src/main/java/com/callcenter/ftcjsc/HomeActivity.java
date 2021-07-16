@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,13 +15,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.callcenter.ftcjsc.services.MessageEvent;
 import com.callcenter.ftcjsc.services.TimerService;
 import com.callcenter.ftcjsc.utils.Constants;
 import com.callcenter.ftcjsc.utils.RequestCodes;
 import com.callcenter.ftcjsc.utils.StorageKeys;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -91,9 +88,10 @@ public class HomeActivity extends AppCompatActivity {
 //        ((TextView)findViewById(R.id.lbSimLng)).setText("" + getResources().getText(R.string.lng) + Constants.getLongitude());
 
         ((TextView)findViewById(R.id.lbDeviceType)).setText(getResources().getText(R.string.device_type) + Constants.getLabel(Constants.getDeviceType()));
-        ((TextView)findViewById(R.id.lbCountdownTimer)).setText("" + getResources().getText(R.string.delay) + Constants.getDelayTime());
+        ((TextView)findViewById(R.id.lbCountdownTimer)).setText("" + getResources().getText(R.string.delay) + Constants.getDelayTime() / 1000);
 //        ((TextView)findViewById(R.id.lbPhone)).setText(getResources().getText(R.string.phone) + Constants.getPhoneNumber());
-        ((TextView)findViewById(R.id.lbSimImei)).setText(getResources().getText(R.string.imei) + Constants.getImei());
+        ((TextView)findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + Constants.getIdm());
+        ((TextView)findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + Constants.getIds());
         ((TextView)findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
         ((TextView)findViewById(R.id.lblMCC)).setText(getResources().getText(R.string.mcc) + Constants.getMcc());
         ((TextView)findViewById(R.id.lblMNC)).setText(getResources().getText(R.string.mnc) + Constants.getMnc());
@@ -107,12 +105,12 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.btnConfig).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(HomeActivity.this, ConfigActivity.class);
-                startActivityForResult(i, RequestCodes.onConfigurationsSuccess);
+//                Intent i = new Intent(HomeActivity.this, ConfigActivity.class);
+//                startActivityForResult(i, RequestCodes.onConfigurationsSuccess);
             }
         });
-        final EditText et = findViewById(R.id.txtUserInput);
 
+        final EditText et = findViewById(R.id.txtUserInput);
         findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

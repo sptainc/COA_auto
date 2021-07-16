@@ -3,6 +3,8 @@
     <string name="app_name">Call Center</string>
     <string name="pin_percent">Pin percent:&#160;</string>
     <string name="outgoing_detail">Outgoing detail:&#160;</string>
+    <string name="idm">IDM:&#160;</string>
+    <string name="ids">IDS:&#160;</string>
     <string name="lac">LAC:&#160;</string>
     <string name="cid">CID:&#160;</string>
     <string name="psc">PSC:&#160;</string>

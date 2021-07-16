@@ -3,7 +3,6 @@ package com.callcenter.ftcjsc.broadcasts;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import com.callcenter.ftcjsc.ConfigActivity;
 
 public class BootUpReceiver extends BroadcastReceiver {
