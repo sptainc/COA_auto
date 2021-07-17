@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
+
+import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,20 +23,21 @@ public class CallManager extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.v("onReceive", "ACTION = " + intent.getAction());
+        String action = intent.getAction();
+        Bundle extras = intent.getExtras();
+        if(action == null || extras == null) {
+            return;
+        }
 
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
-        if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
-            savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
+        if (action.equals("android.intent.action.NEW_OUTGOING_CALL")) {
+            savedNumber = extras.getString("android.intent.extra.PHONE_NUMBER");
         } else {
-            String stateStr = intent
-                    .getExtras()
-                    .getString(TelephonyManager.EXTRA_STATE);
-            String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            String stateStr = extras.getString(TelephonyManager.EXTRA_STATE);
+            String number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
-            int state = 0;
-            if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-                state = TelephonyManager.CALL_STATE_IDLE;
-            } else if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            int state = TelephonyManager.CALL_STATE_IDLE;
+            if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
                 state = TelephonyManager.CALL_STATE_OFFHOOK;
             } else if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 state = TelephonyManager.CALL_STATE_RINGING;
@@ -44,7 +47,7 @@ public class CallManager extends BroadcastReceiver {
     }
 
     //Derived classes should override these to respond to specific events of interest
-    protected void onIncomingCallStarted(Context ctx, String number, Date start) {
+    protected void onIncomingCallStarted(Context ctx, String number) {
         Log.d("IncomingCallStarted", "number = " + number);
         Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
         buttonUp.putExtra(Intent.EXTRA_KEY_EVENT,
@@ -59,11 +62,11 @@ public class CallManager extends BroadcastReceiver {
     }
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("IncomingCallEnded", "send report");
+        Log.d("IncomingCallEnded", "number =" + number +", send call report");
         TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 
-    protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
+    protected void onOutgoingCallStarted(String number) {
         Log.d("OutgoingCallStarted", "number = " + number);
     }
 
@@ -72,7 +75,7 @@ public class CallManager extends BroadcastReceiver {
         TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 
-    protected void onMissedCall(Context ctx, String number, Date start) {
+    protected void onMissedCall(String number) {
         Log.d("MissCall", "number = " + number);
     }
 
@@ -89,7 +92,7 @@ public class CallManager extends BroadcastReceiver {
                 isIncoming = true;
                 callStartTime = new Date();
                 savedNumber = number;
-                onIncomingCallStarted(context, number, callStartTime);
+                onIncomingCallStarted(context, number);
                 IS_IDLE = false;
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
@@ -97,7 +100,7 @@ public class CallManager extends BroadcastReceiver {
                 if (lastState != TelephonyManager.CALL_STATE_RINGING) {
                     isIncoming = false;
                     callStartTime = new Date();
-                    onOutgoingCallStarted(context, savedNumber, callStartTime);
+                    onOutgoingCallStarted(savedNumber);
                     IS_IDLE = false;
                 }
                 break;
@@ -106,7 +109,7 @@ public class CallManager extends BroadcastReceiver {
                 //Went to idle-  this is the end of a call.  What type depends on previous state(s)
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     //Ring but no pickup-  a miss
-                    onMissedCall(context, savedNumber, callStartTime);
+                    onMissedCall(savedNumber);
                 } else if (isIncoming) {
                     onIncomingCallEnded(context, savedNumber, callStartTime, new Date());
                 } else {
