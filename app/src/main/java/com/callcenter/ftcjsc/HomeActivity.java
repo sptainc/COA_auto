@@ -141,6 +141,8 @@ public class HomeActivity extends AppCompatActivity {
                     editor.apply();
                     btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_edit));
                     lo.setBackgroundColor(getResources().getColor(R.color.silver));
+
+                    TimerService.getInstance().startRunnable(null);
                 }
                 editable = !editable;
             }

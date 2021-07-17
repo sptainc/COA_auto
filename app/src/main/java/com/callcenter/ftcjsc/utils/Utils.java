@@ -6,16 +6,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
-
 import androidx.core.app.ActivityCompat;
-
-import android.telephony.CellInfo;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
-
-import java.util.List;
-
 
 public class Utils {
     public static String getDeviceGeneration(Context context) {
@@ -24,7 +19,6 @@ public class Utils {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
-
         int networkType = mTelephonyManager.getNetworkType();
         return getDeviceGeneration(networkType);
     }
@@ -79,7 +73,7 @@ public class Utils {
         String mcc = mTelephonyManager.getNetworkOperator().substring(0, 3);
         String mnc = mTelephonyManager.getNetworkOperator().substring(3);
         String ids = mTelephonyManager.getSubscriberId();
-        String idm = imei;
+        String idm = Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         String lac = null;
         String cid = null;

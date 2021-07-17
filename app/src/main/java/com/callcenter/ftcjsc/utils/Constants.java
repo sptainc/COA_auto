@@ -63,8 +63,8 @@ public class Constants {
     public static void setValues(String sImei, String sGen, int type, int delay, String mcc, String mnc, String lac, String cid, String psc, String ids, String idm, String userInput) {
         Constants.imei = sImei;
         Constants.generation = sGen;
-        Constants.deviceType = type;
-        Constants.delayTime = delay;
+//        Constants.deviceType = type;
+//        Constants.delayTime = delay;
         Constants.mnc = mnc;
         Constants.mcc = mcc;
         Constants.lac = lac;

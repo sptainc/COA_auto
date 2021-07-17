@@ -86,6 +86,7 @@ public class TimerService extends Service {
             public void run() {
                 if (CallManager.IS_IDLE) {
                     sendRequest();
+//                    downloadFile("");
                     lastRequestTime = new Date().getTime();
                 } else {
                     requestHandler.postDelayed(requestRunnable, Constants.getDelayTime());
@@ -257,7 +258,9 @@ public class TimerService extends Service {
     }
 
     private void downloadFile(final String filePath) {
-        Call<ResponseBody> call = ApiClient.getAPIService(false).downUpFile("Content/Download/" + filePath);
+       Call<ResponseBody> call = ApiClient.getAPIService(false).downUpFile("Content/Download/" + filePath);
+        // Call<ResponseBody> call = ApiClient.getAPIService(true).downUpFile("20MB.zip");
+
         Log.d("DownloadStart", filePath);
         call.enqueue(new Callback<ResponseBody>() {
             @SuppressLint("StaticFieldLeak")
@@ -322,20 +325,20 @@ public class TimerService extends Service {
     }
 
     private boolean removeFile() {
-        File file = new File(pathName);
-        boolean isSuccess = false;
-        if (file.exists()) {
-            if (file.delete()) {
-                Log.d("RemoveFileSuccess", "path = " + pathName);
-                isSuccess = true;
-            } else {
-                Log.d("RemoveFileFailure", "path = " + pathName);
-            }
-        }else {
-            Log.d("RemoveFileFailure", "path = " + pathName + " does not exist");
-        }
-        pathName = "";
-        return isSuccess;
+       File file = new File(pathName);
+       boolean isSuccess = false;
+       if (file.exists()) {
+           if (file.delete()) {
+               Log.d("RemoveFileSuccess", "path = " + pathName);
+               isSuccess = true;
+           } else {
+               Log.d("RemoveFileFailure", "path = " + pathName);
+           }
+       }else {
+           Log.d("RemoveFileFailure", "path = " + pathName + " does not exist");
+       }
+       pathName = "";
+       return isSuccess;
     }
 
     private boolean writeResponseBodyToDisk(ResponseBody body, String url) {
