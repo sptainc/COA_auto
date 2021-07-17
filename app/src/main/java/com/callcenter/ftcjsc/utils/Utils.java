@@ -30,6 +30,7 @@ public class Utils {
     }
 
     private static String getDeviceGeneration(int networkType) {
+        Log.d("NETWORK_TYPE", "value = " + networkType);
         switch (networkType) {
             case TelephonyManager.NETWORK_TYPE_GPRS:
             case TelephonyManager.NETWORK_TYPE_EDGE:

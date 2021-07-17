@@ -5,11 +5,14 @@
       <map>
         <entry key="app/src/main/res/drawable/border.xml" value="0.179" />
         <entry key="app/src/main/res/layout/activity_edit.xml" value="0.1703125" />
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.1703125" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.3550109863281251" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1703125" />
-        <entry key="app/src/main/res/layout/header.xml" value="0.1703125" />
+        <entry key="app/src/main/res/layout/header.xml" value="0.4451950073242188" />
       </map>
     </option>
+  </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />

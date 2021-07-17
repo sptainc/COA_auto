@@ -1,6 +1,6 @@
 <resources>
     <string name="base_url">http://ibsmanage.com/Active/</string>
-    <string name="app_name">Call Center</string>
+    <string name="app_name">CALL CENTER</string>
     <string name="pin_percent">Pin percent:&#160;</string>
     <string name="outgoing_detail">Outgoing detail:&#160;</string>
     <string name="idm">IDM:&#160;</string>

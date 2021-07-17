@@ -1,7 +1,6 @@
 package com.callcenter.ftcjsc.services;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -15,16 +14,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.callcenter.ftcjsc.utils.Constants;
 import com.callcenter.ftcjsc.utils.Utils;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Date;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,13 +30,12 @@ public class TimerService extends Service {
     private Context mContext;
 
     private static TimerService instance = null;
-    private static Handler requestHandler = new Handler();
-    private static Handler checkerHandler = new Handler();
+    private static final Handler requestHandler = new Handler();
+    private static final Handler checkerHandler = new Handler();
     private static Runnable requestRunnable;
     private static Runnable checkerRunnable;
     private double lastRequestTime = 0;
     private String pathName = "";
-    ProgressDialog dialog;
 
     public static TimerService getInstance() {
         if (instance == null) {
@@ -90,8 +85,7 @@ public class TimerService extends Service {
             @Override
             public void run() {
                 if (CallManager.IS_IDLE) {
-//                    sendRequest();
-                    downloadFile(Constants.testLinkSmallDownload);
+                    sendRequest();
                     lastRequestTime = new Date().getTime();
                 } else {
                     requestHandler.postDelayed(requestRunnable, Constants.getDelayTime());
@@ -136,28 +130,27 @@ public class TimerService extends Service {
         int version = android.os.Build.VERSION.SDK_INT;
 
         if(idm == null || ids == null) {
-            Log.d("Parameters invalid", "idm = " + idm + ", ids = " + ids);
+            Log.d("ParametersInvalid", "idm = " + idm + ", ids = " + ids);
         }
-        String url = "?IDS=" + ids + "&IDM=" + idm + "&G=" + generation + "&D=" + version + "&M=" + name;
-        return url;
+        return "?IDS=" + ids + "&IDM=" + idm + "&G=" + generation + "&D=" + version + "&M=" + name;
     }
 
     public void sendRequest() {
         String commonUrl = genCommonUrl();
         String url = commonUrl + "&P=" + Constants.getUserInput();
         Call<String> stringCall = ApiClient.getAPIService(false).sendRequest(url);
-        Log.d("SendRequest start", url);
+        Log.d("SendRequestStart", url);
 
         stringCall.enqueue((new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if(response.isSuccessful()) {
+                if(response.isSuccessful() && response.body() != null) {
                     String result = response.body();
 
                     if (!TextUtils.isEmpty(result)) {
-                        Log.d("SendRequest result", result);
+                        Log.d("SendRequestResult", result);
                         if (result.contains("$ok;")) {
-                            Log.d("SendRequest success", "start waiting incoming call");
+                            Log.d("SendRequestSuccess", "start waiting incoming call");
                             startRunnable(null);
                         } else if (result.contains("$c:") && result.contains(";$t:")) {
                             int phoneStartIndex = result.indexOf(":") + 1;
@@ -167,12 +160,12 @@ public class TimerService extends Service {
                             String phone = result.substring(phoneStartIndex, phoneEndIndex);
                             String duration = result.substring(durationStartIndex, durationEndIndex);
 
-                            Log.d("Phone and duration", phone  + ", " + duration);
+                            Log.d("PhoneAndDuration", phone  + ", " + duration);
                             try {
                                 int iDuration = Integer.parseInt(duration);
-                                Log.d("Validity duration", "duration = " + iDuration + ", duration > 0 ? " + (iDuration > 0));
-                                Log.d("Validity phone", "phone = " + phone + ", valid ? " + PhoneNumberUtils.isGlobalPhoneNumber(phone));
-                                Log.d("Validity device", "Device is idle ? " + CallManager.IS_IDLE);
+                                Log.d("ValidityDuration", "duration = " + iDuration + ", duration > 0 ? " + (iDuration > 0));
+                                Log.d("ValidityPhone", "phone = " + phone + ", valid ? " + PhoneNumberUtils.isGlobalPhoneNumber(phone));
+                                Log.d("ValidityDevice", "device is idle ? " + CallManager.IS_IDLE);
 
                                 if (iDuration > 0 && CallManager.IS_IDLE) {
                                     Intent intent = new Intent(Intent.ACTION_CALL);
@@ -180,19 +173,22 @@ public class TimerService extends Service {
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     mContext.startActivity(intent);
                                     endCall(iDuration * 1000);
-                                    Log.d("SendRequest success", "start outgoing call to " + phone + ", duration = " + duration);
+                                    Log.d("SendRequestSuccess", "start outgoing call to " + phone + ", duration = " + duration);
                                 } else {
-                                    Log.d("SendRequest success", "cannot start outgoing call to " + phone + " because parameters invalid");
+                                    Log.d("SendRequestSuccess", "cannot start outgoing call to " + phone + " because parameters invalid");
                                     startRunnable(null);
                                 }
                             } catch (Exception e) {
-                                Log.d("SendRequest success", "throw to catch block" + e.getMessage());
+                                Log.d("SendRequestSuccess", "throw to catch block" + e.getMessage());
                                 startRunnable(null);
                             }
-                        } else if(result.contains("$f:[") && result.contains(".zip];")){
-                            Log.d("SendRequest success", "download/upload file");
+                        } else if(result.contains("$f:") && result.contains(".zip;")){
+                            Log.d("SendRequestSuccess", "download & upload file");
+                            int fileStartIndex = result.indexOf(":") + 1;
+                            int fileEndIndex = result.lastIndexOf(";");
+                            String filePath = result.substring(fileStartIndex, fileEndIndex);
                             //download and upload file
-                            startRunnable(null);
+                            downloadFile(filePath);
                         } else {
                             startRunnable(null);
                         }
@@ -206,7 +202,7 @@ public class TimerService extends Service {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.d("SendRequest failure", "throwable: " + t.getMessage());
+                Log.d("SendRequestFailure", "throwable: " + t.getMessage());
                 startRunnable(null);
             }
         }));
@@ -235,17 +231,18 @@ public class TimerService extends Service {
         }));
     }
 
-    public void sendDownUpReport(final Boolean isDownload, final int status) {
+    public void sendNetworkReport(final Boolean isDownload, final int status) {
+        final String TAG = isDownload ? "Download" : "Upload";
         String commonUrl = genCommonUrl();
         String url = commonUrl + (isDownload ? "&DL=" : "&UL=") + status;
         Call<String> stringCall = ApiClient.getAPIService(false).sendRequest(url);
-        Log.d("SendDownUpReportStart", url);
+        Log.d(TAG + "Start", url);
 
         stringCall.enqueue((new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Boolean shouldResend = status == 0 || (!isDownload && status == 1);
-                Log.d("SendDownUpReportSuccess", "resend runnable? " + shouldResend);
+                boolean shouldResend = status == 0 || !isDownload;
+                Log.d(TAG + "Success", "resend runnable? " + shouldResend);
                 if(shouldResend) {
                     startRunnable(null);
                 }
@@ -253,29 +250,30 @@ public class TimerService extends Service {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Log.d("SendDownUpReportFailure", "throwable: " + t.getMessage());
+                Log.d(TAG + "Failure", "throwable: " + t.getMessage());
                 startRunnable(null);
             }
         }));
     }
 
-    private void downloadFile(final String url) {
-        Call<ResponseBody> call = ApiClient.getAPIService(true).downUpFile(url);
-        Log.d("DownloadStart", url);
+    private void downloadFile(final String filePath) {
+        Call<ResponseBody> call = ApiClient.getAPIService(false).downUpFile("Content/Download/" + filePath);
+        Log.d("DownloadStart", filePath);
         call.enqueue(new Callback<ResponseBody>() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.d("DownloadSuccessfully", "server contacted and has file");
-                    sendDownUpReport(true, 1);
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("DownloadSuccess", "server contacted and has file");
+                    sendNetworkReport(true, 1);
 
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            boolean writtenToDisk = writeResponseBodyToDisk(response.body(), url);
+                            boolean writtenToDisk = writeResponseBodyToDisk(response.body(), filePath);
                             Log.d("SaveFile", "Wrote file to disk successfully? " + writtenToDisk);
                             if(writtenToDisk) {
-                                uploadFile("abc");
+                                uploadFile();
                             }else {
                                 startRunnable(null);
                             }
@@ -284,50 +282,50 @@ public class TimerService extends Service {
                     }.execute();
                 }
                 else {
-                    Log.d("DownloadUnsuccessfully", "server contact failed");
-                    sendDownUpReport(true, 0);
+                    Log.d("DownloadFailure", "server contact failed");
+                    sendNetworkReport(true, 0);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("DownloadFailure", "throwable: " + t.getMessage());
-                sendDownUpReport(true, 0);
+                sendNetworkReport(true, 0);
             }
         });
     }
 
-    private void uploadFile(final String url) {
-        Call<ResponseBody> call = ApiClient.getAPIService(true).downUpFile(url);
-        Log.d("UploadStart", url);
+    private void uploadFile() {
+        Call<ResponseBody> call = ApiClient.getAPIService(false).downUpFile("");
+        Log.d("UploadStart", ApiClient.BASE_URL);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.d("UploadSuccess", "server contacted and has file");
-                    sendDownUpReport(false, 1);
+                    Log.d("UploadSuccess", "server contact successfully");
+                    sendNetworkReport(false, 1);
                 }
                 else {
                     Log.d("UploadFailure", "server contact failed");
-                    sendDownUpReport(false, 0);
+                    sendNetworkReport(false, 0);
                 }
-//                removeFile();
+                removeFile();
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("UploadFailure", "throwable: " + t.getMessage());
-                sendDownUpReport(false, 0);
+                sendNetworkReport(false, 0);
                 removeFile();
             }
         });
     }
 
     private boolean removeFile() {
-        File fdelete = new File(pathName);
-        Boolean isSuccess = false;
-        if (fdelete.exists()) {
-            if (fdelete.delete()) {
+        File file = new File(pathName);
+        boolean isSuccess = false;
+        if (file.exists()) {
+            if (file.delete()) {
                 Log.d("RemoveFileSuccess", "path = " + pathName);
                 isSuccess = true;
             } else {
@@ -350,8 +348,6 @@ public class TimerService extends Service {
 
             try {
                 byte[] fileReader = new byte[4096];
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
                 inputStream = body.byteStream();
                 outputStream = new FileOutputStream(futureStudioIconFile);
 
@@ -361,11 +357,12 @@ public class TimerService extends Service {
                         break;
                     }
                     outputStream.write(fileReader, 0, read);
-                    fileSizeDownloaded += read;
                 }
                 outputStream.flush();
                 return true;
             } catch (IOException e) {
+                Log.d("WroteFileFailure", e.getMessage());
+                e.printStackTrace();
                 return false;
             } finally {
                 if (inputStream != null) {
@@ -376,6 +373,8 @@ public class TimerService extends Service {
                 }
             }
         } catch (IOException e) {
+            Log.d("WroteFileFailure", e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

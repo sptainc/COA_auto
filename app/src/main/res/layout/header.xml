@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/app_name"
+            android:textFontWeight="bold"
             android:textColor="@color/white"
             android:textSize="24dp" />
 
@@ -29,9 +30,9 @@
 
             <Button
                 android:id="@+id/btnConfig"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@android:drawable/ic_menu_edit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@android:drawable/ic_menu_add"
                 android:foreground="?attr/selectableItemBackgroundBorderless" />
         </LinearLayout>
     </LinearLayout>

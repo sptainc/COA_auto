@@ -20,7 +20,7 @@ public class CallManager extends BroadcastReceiver {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.v("ACTION = ", intent.getAction());
+        Log.v("onReceive", "ACTION = " + intent.getAction());
 
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
@@ -45,7 +45,7 @@ public class CallManager extends BroadcastReceiver {
 
     //Derived classes should override these to respond to specific events of interest
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
-        Log.d("IncomingCall started", "number = " + number);
+        Log.d("IncomingCallStarted", "number = " + number);
         Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
         buttonUp.putExtra(Intent.EXTRA_KEY_EVENT,
                 new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
@@ -53,22 +53,22 @@ public class CallManager extends BroadcastReceiver {
             ctx.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("AutoAnswer error"," throw error on auto answer: " + e.getMessage());
+            Log.d("AutoAnswerFailure","throw error on auto answer: " + e.getMessage());
             TimerService.getInstance().startRunnable(ctx);
         }
     }
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("IncomingCall ended", "send report");
+        Log.d("IncomingCallEnded", "send report");
         TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
-        Log.d("OutgoingCall started", "number = " + number);
+        Log.d("OutgoingCallStarted", "number = " + number);
     }
 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("OutgoingCall ended", "number = " + number + ", duration = " + (end.getTime() - start.getTime()));
+        Log.d("OutgoingCallEnded", "number = " + number + ", duration = " + (end.getTime() - start.getTime()));
         TimerService.getInstance().sendCallReport(ctx, end.getTime() - start.getTime());
     }
 

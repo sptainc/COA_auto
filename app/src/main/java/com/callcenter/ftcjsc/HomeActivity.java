@@ -6,15 +6,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 import com.callcenter.ftcjsc.services.MessageEvent;
 import com.callcenter.ftcjsc.services.TimerService;
 import com.callcenter.ftcjsc.utils.Constants;
@@ -26,6 +32,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 
 public class HomeActivity extends AppCompatActivity {
+    private Boolean editable = false;
 //    private LocationManager mLocationManager;
 
     // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
@@ -109,16 +116,21 @@ public class HomeActivity extends AppCompatActivity {
 //                startActivityForResult(i, RequestCodes.onConfigurationsSuccess);
             }
         });
-
         final EditText et = findViewById(R.id.txtUserInput);
-        findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
+        final Button btn = findViewById(R.id.btnEdit);
+        final LinearLayout lo = findViewById(R.id.loEdit);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-                final CheckBox mapView = (CheckBox) view;
-                boolean checked = mapView.isChecked();
-                if(checked) {
+                if(!editable) {
                     et.setEnabled(true);
                     et.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+                    et.setSelection(et.getText().length());
+                    btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_checked));
+                    lo.setBackgroundColor(getResources().getColor(R.color.white));
                 }else {
                     String text = et.getText().toString();
                     text = TextUtils.isEmpty(text) ? "" : text;
@@ -128,7 +140,10 @@ public class HomeActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString(StorageKeys.user_input.toString(), text);
                     editor.apply();
+                    btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_edit));
+                    lo.setBackgroundColor(getResources().getColor(R.color.silver));
                 }
+                editable = !editable;
             }
         });
     }

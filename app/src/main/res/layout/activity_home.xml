@@ -8,14 +8,15 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/header" />
+        layout="@layout/header"
+    />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/magnetic"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/lbDeviceType"
@@ -161,27 +162,39 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/silver"
             android:orientation="horizontal"
+            android:paddingHorizontal="5dp"
+            android:id="@+id/loEdit"
             >
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkbox"
-                android:textColor="@color/white"
-                android:checked="false"
-                android:layout_marginLeft="5dp"
-                />
+<!--            <CheckBox-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/checkbox"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:checked="false"-->
+<!--                android:layout_marginLeft="5dp"-->
+<!--                />-->
             <EditText
                 android:id="@+id/txtUserInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingVertical="15dp"
-                android:paddingHorizontal="5dp"
+                android:textSize="20dp"
+                android:textFontWeight="900"
                 android:backgroundTint="@android:color/transparent"
                 android:textColor="@color/magnetic"
                 android:enabled="false"
-                android:hint="input here"/>
+                android:layout_weight="1"
+                android:hint="Enter value here"/>
+            <Button
+                android:id="@+id/btnEdit"
+                android:padding="5dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/ic_edit"
+                />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
