@@ -12,15 +12,23 @@ import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Utils {
     public static String getDeviceGeneration(Context context) {
-        TelephonyManager mTelephonyManager = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
+        try {
+            TelephonyManager mTelephonyManager = (TelephonyManager)
+                    context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return null;
+            }
+            int networkType = mTelephonyManager.getNetworkType();
+            return getDeviceGeneration(networkType);
+        }catch(Exception e) {
+            e.printStackTrace();
+            return Constants.getGeneration();
         }
-        int networkType = mTelephonyManager.getNetworkType();
-        return getDeviceGeneration(networkType);
     }
 
     private static String getDeviceGeneration(int networkType) {
@@ -53,6 +61,11 @@ public class Utils {
                 // TelephonyManager.NETWORK_TYPE_NR
                 return "5G";
         }
+    }
+
+    public static String getTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 'at' HH:mm:ss");
+        return sdf.format(new Date());
     }
 
     public static void updateConstants(Context context) {

@@ -18,8 +18,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
+
 import com.callcenter.ftcjsc.services.MessageEvent;
 import com.callcenter.ftcjsc.services.TimerService;
 import com.callcenter.ftcjsc.utils.Constants;
@@ -29,16 +31,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-
 public class HomeActivity extends AppCompatActivity {
+    private final String TAG = "ActivityHOME";
     private Boolean editable = false;
-//    private LocationManager mLocationManager;
 
-    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
-        TextView tv = findViewById(R.id.lbOutgoingDetail);
-        tv.setText(getResources().getString(R.string.outgoing_detail) + " " + event.message);
+//        Log.d(TAG, "MessageEvent: " + event.message);
+        ((TextView)findViewById(R.id.tvProcess)).setText(event.message);
+        ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
     }
 
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
@@ -54,67 +55,39 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-//        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Intent service = new Intent(this, TimerService.class);
         startService(service);
-
-//        checkGpsEnabled();
-//        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.MIN_TIME_BW_UPDATES, Constants.MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerGPS);
         addViews();
         addListener();
+        Log.d(TAG, "onCreate");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        EventBus.getDefault().register(this);
+        ((TextView)findViewById(R.id.tvProcess)).setText(MessageEvent.globalMessage);
+        ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
+        Log.d(TAG, "onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        this.unregisterReceiver(this.mBatInfoReceiver);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
+        unregisterReceiver(mBatInfoReceiver);
         EventBus.getDefault().unregister(this);
-        super.onStop();
+        Log.d(TAG, "onPause");
     }
 
     private void addViews() {
-//        ((TextView)findViewById(R.id.lbSimLat)).setText("" + getResources().getText(R.string.lat) + Constants.getLatitude());
-//        ((TextView)findViewById(R.id.lbSimLng)).setText("" + getResources().getText(R.string.lng) + Constants.getLongitude());
-
-        ((TextView)findViewById(R.id.lbDeviceType)).setText(getResources().getText(R.string.device_type) + Constants.getLabel(Constants.getDeviceType()));
-        ((TextView)findViewById(R.id.lbCountdownTimer)).setText("" + getResources().getText(R.string.delay) + Constants.getDelayTime() / 1000);
-//        ((TextView)findViewById(R.id.lbPhone)).setText(getResources().getText(R.string.phone) + Constants.getPhoneNumber());
         ((TextView)findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + Constants.getIdm());
         ((TextView)findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + Constants.getIds());
         ((TextView)findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
-        ((TextView)findViewById(R.id.lblMCC)).setText(getResources().getText(R.string.mcc) + Constants.getMcc());
-        ((TextView)findViewById(R.id.lblMNC)).setText(getResources().getText(R.string.mnc) + Constants.getMnc());
-        ((TextView)findViewById(R.id.lblLAC)).setText("" + getResources().getText(R.string.lac) + Constants.getLac());
-        ((TextView)findViewById(R.id.lblCID)).setText("" + getResources().getText(R.string.cid) + Constants.getCid());
-        ((TextView)findViewById(R.id.lblPSC)).setText("" + getResources().getText(R.string.psc) + Constants.getPsc());
         ((EditText)findViewById(R.id.txtUserInput)).setText(Constants.getUserInput());
     }
 
     private void addListener() {
-        findViewById(R.id.btnConfig).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent i = new Intent(HomeActivity.this, ConfigActivity.class);
-//                startActivityForResult(i, RequestCodes.onConfigurationsSuccess);
-            }
-        });
         final EditText et = findViewById(R.id.txtUserInput);
         final Button btn = findViewById(R.id.btnEdit);
         final LinearLayout lo = findViewById(R.id.loEdit);
@@ -129,7 +102,7 @@ public class HomeActivity extends AppCompatActivity {
                     imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
                     et.setSelection(et.getText().length());
                     btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_checked));
-                    lo.setBackgroundColor(getResources().getColor(R.color.white));
+                    lo.setBackground(getResources().getDrawable(R.drawable.border_radius));
                 }else {
                     String text = et.getText().toString();
                     text = TextUtils.isEmpty(text) ? "" : text;
@@ -140,8 +113,7 @@ public class HomeActivity extends AppCompatActivity {
                     editor.putString(StorageKeys.user_input.toString(), text);
                     editor.apply();
                     btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_edit));
-                    lo.setBackgroundColor(getResources().getColor(R.color.silver));
-
+                    lo.setBackground(getResources().getDrawable(R.drawable.border_radius_disabled));
                     TimerService.getInstance().startRunnable(null);
                 }
                 editable = !editable;
@@ -152,6 +124,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
         Log.d("onActivityResult", "requestCode: " + requestCode + ", resultCode: " + resultCode);
         if (resultCode == RESULT_OK && requestCode == RequestCodes.onConfigurationsSuccess) {
             TimerService.getInstance().startRunnable(null);

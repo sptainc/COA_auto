@@ -1,13 +1,10 @@
 package com.callcenter.ftcjsc.services;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 public class MessageEvent {
+    public static String globalMessage = "";
     public final String message;
     public MessageEvent(String message) {
         this.message = message;
+        globalMessage = message;
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {/* Do something */};
 }

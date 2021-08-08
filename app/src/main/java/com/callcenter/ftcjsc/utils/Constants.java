@@ -3,6 +3,7 @@ package com.callcenter.ftcjsc.utils;
 import android.os.Build;
 
 public class Constants {
+    public static final String UPDATE_UI_BROADCAST = "com.callcenter.updateui";
     public static String testLinkSmallDownload = "5MB.zip";
     public static String testLinkDownload = "1GB.zip";
     private static final String caller = "Caller Device (Type = 0)";

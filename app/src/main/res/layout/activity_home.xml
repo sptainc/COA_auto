@@ -1,200 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".HomeActivity">
+    android:background="@color/magnetic"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+    <View
+        android:id="@+id/focus_view"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <requestFocus />
+    </View>
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/header"
-    />
-
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/magnetic"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/lbDeviceType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/device_type"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lbDeviceGen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/gen"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lbPinLevel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/pin_percent"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lbCountdownTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/delay"
-            android:textColor="@color/textColor" />
-
-<!--        <TextView-->
-<!--            android:id="@+id/lbPhone"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="left"-->
-<!--            android:layout_marginBottom="5dp"-->
-<!--            android:text="@string/phone"-->
-<!--            android:textColor="@color/textColor" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/lbSimLat"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="left"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginBottom="5dp"-->
-<!--            android:text="@string/lat"-->
-<!--            android:textColor="@color/textColor" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/lbSimLng"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="left"-->
-<!--            android:layout_marginBottom="5dp"-->
-<!--            android:text="@string/lng"-->
-<!--            android:textColor="@color/textColor" />-->
-
-
-        <TextView
-            android:id="@+id/lbIdm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/idm"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lbIds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/ids"
-            android:textColor="@color/textColor" />
-
-
-        <TextView
-            android:id="@+id/lblMCC"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/mcc"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lblMNC"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/mnc"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lblLAC"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/lac"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lblCID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/cid"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lblPSC"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginBottom="5dp"
-            android:text="@string/psc"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:id="@+id/lbOutgoingDetail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/textColor" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Input default value to send to server"
-            android:textColor="@color/textColor" />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/silver"
-            android:orientation="horizontal"
-            android:paddingHorizontal="5dp"
-            android:id="@+id/loEdit"
-            >
-<!--            <CheckBox-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/checkbox"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:checked="false"-->
-<!--                android:layout_marginLeft="5dp"-->
-<!--                />-->
-            <EditText
-                android:id="@+id/txtUserInput"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="15dp"
-                android:textSize="20dp"
-                android:textFontWeight="900"
-                android:backgroundTint="@android:color/transparent"
-                android:textColor="@color/magnetic"
-                android:enabled="false"
-                android:layout_weight="1"
-                android:hint="Enter value here"/>
-            <Button
-                android:id="@+id/btnEdit"
-                android:padding="5dp"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/ic_edit"
-                />
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:id="@+id/loEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_radius"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="5dp">
+
+                    <EditText
+                        android:id="@+id/txtUserInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:backgroundTint="@android:color/transparent"
+                        android:enabled="false"
+                        android:hint="Enter value here"
+                        android:paddingVertical="10dp"
+                        android:textAppearance="?android:attr/textAppearanceButton"
+                        android:textColor="@color/magnetic"
+                        android:textFontWeight="1000"
+                        android:textSize="18dp" />
+
+                    <Button
+                        android:id="@+id/btnEdit"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_edit"
+                        android:padding="8dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/lbPinLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/pin_percent"
+                    android:textAppearance="?android:attr/textAppearanceButton"
+                    android:textColor="@color/textColor" />
+
+                <TextView
+                    android:id="@+id/lbDeviceGen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/gen"
+                    android:textAppearance="?android:attr/textAppearanceButton"
+                    android:textColor="@color/textColor" />
+
+                <TextView
+                    android:id="@+id/lbIdm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/idm"
+                    android:textAppearance="?android:attr/textAppearanceButton"
+                    android:textColor="@color/textColor" />
+
+                <TextView
+                    android:id="@+id/lbIds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/ids"
+                    android:textAppearance="?android:attr/textAppearanceButton"
+                    android:textColor="@color/textColor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/textColor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="----- PROCESS -----"
+                android:textColor="@color/textColor"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/tvProcess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textAppearance="?android:attr/textAppearanceButton"
+                android:textColor="@color/textColor" />
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 </LinearLayout>
