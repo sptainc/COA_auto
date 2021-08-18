@@ -53,7 +53,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
 
     implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.6.3'
     implementation 'com.squareup.retrofit2:converter-scalars:2.5.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.annotation:annotation:1.0.0'

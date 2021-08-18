@@ -3,9 +3,7 @@ package com.callcenter.ftcjsc.utils;
 import android.os.Build;
 
 public class Constants {
-    public static final String UPDATE_UI_BROADCAST = "com.callcenter.updateui";
-    public static String testLinkSmallDownload = "5MB.zip";
-    public static String testLinkDownload = "1GB.zip";
+    public static int OUTGOING_CALL_TIME = 300;
     private static final String caller = "Caller Device (Type = 0)";
     private static final String receiver = "Listener Device (Type = 1)";
 
@@ -32,6 +30,9 @@ public class Constants {
     public static String getIds() {
         return ids;
     }
+    public static void setIds(String _ids) {
+        ids = _ids;
+    }
     public static String getIdm() {
         return idm;
     }
@@ -51,7 +52,7 @@ public class Constants {
         if (model.toLowerCase().startsWith(manufacturer.toLowerCase())) {
             return capitalize(model);
         } else {
-            return capitalize(manufacturer) + " " + model;
+            return capitalize(manufacturer) + "-" + model;
         }
     }
 

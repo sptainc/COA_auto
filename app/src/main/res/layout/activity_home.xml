@@ -6,14 +6,6 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
-    <View
-        android:id="@+id/focus_view"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
-        <requestFocus />
-    </View>
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -24,43 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp">
-
-                <LinearLayout
-                    android:id="@+id/loEdit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border_radius"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="5dp">
-
-                    <EditText
-                        android:id="@+id/txtUserInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="@android:color/transparent"
-                        android:enabled="false"
-                        android:hint="Enter value here"
-                        android:paddingVertical="10dp"
-                        android:textAppearance="?android:attr/textAppearanceButton"
-                        android:textColor="@color/magnetic"
-                        android:textFontWeight="1000"
-                        android:textSize="18dp" />
-
-                    <Button
-                        android:id="@+id/btnEdit"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/ic_edit"
-                        android:padding="8dp" />
-                </LinearLayout>
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,17 +52,28 @@
                     android:text="@string/idm"
                     android:textAppearance="?android:attr/textAppearanceButton"
                     android:textColor="@color/textColor" />
-
                 <TextView
                     android:id="@+id/lbIds"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="left"
-                    android:layout_marginBottom="5dp"
                     android:text="@string/ids"
+                    android:layout_marginBottom="5dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceButton"
+                    android:textColor="@color/textColor" />
+
+                <TextView
+                    android:id="@+id/txtUserInput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left"
+                    android:text="@string/user_input"
+                    android:gravity="center_vertical"
                     android:textAppearance="?android:attr/textAppearanceButton"
                     android:textColor="@color/textColor" />
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

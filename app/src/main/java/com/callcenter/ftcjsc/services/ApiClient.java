@@ -12,7 +12,6 @@ import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
 public class ApiClient {
-    private static APIService instance = null;
     public interface APIService {
         @GET()
         Call<String> sendRequest(@Url String url);
@@ -22,7 +21,7 @@ public class ApiClient {
         Call<ResponseBody> downloadFile(@Url String fileUrl);
 
         @Multipart
-        @POST("content/download/")
+        @POST(UPLOAD_URL + "api/content/upload")
         Call<ResponseBody> uploadFile(
                 @Part MultipartBody.Part file,
                 @Part("file") RequestBody name);

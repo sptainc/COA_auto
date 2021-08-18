@@ -1,5 +1,7 @@
 package com.callcenter.ftcjsc.services;
 
+import java.lang.reflect.Method;
+import java.sql.Time;
 import java.util.Date;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,9 +10,13 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import com.callcenter.ftcjsc.utils.Constants;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -37,7 +43,6 @@ public class CallManager extends BroadcastReceiver {
         } else {
             String stateStr = extras.getString(TelephonyManager.EXTRA_STATE);
             String number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-
             int state = TelephonyManager.CALL_STATE_IDLE;
             if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
                 state = TelephonyManager.CALL_STATE_OFFHOOK;
@@ -49,48 +54,16 @@ public class CallManager extends BroadcastReceiver {
     }
 
     //Derived classes should override these to respond to specific events of interest
-    protected void onIncomingCallStarted(final Context ctx, String number)  {
-        TimerService.addProcess("IncomingCall: " + number);
-        Log.d("IncomingCallStarted", "number = " + number);
-        Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        buttonUp.putExtra(Intent.EXTRA_KEY_EVENT,
-                new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
-        try {
-            ctx.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("AutoAnswerFailure","throw error on auto answer: " + e.getMessage());
-            TimerService.getInstance().startRunnable(ctx);
-        }
-    }
+    protected void onIncomingCallStarted(final Context ctx, String number)  { }
 
-    protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d("IncomingCallEnded", "number =" + number +", send call report");
-        double duration = end.getTime() - start.getTime();
-        int iDuration = (int) (duration / 1000);
+    protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {}
 
-        TimerService.addProcess("IncomingCallInfo: phone = " + number + ", duration = " + iDuration);
-        TimerService.getInstance().sendCallReport(ctx, number, iDuration);
-    }
+    protected void onOutgoingCallStarted(Context ctx, String number) { }
 
-    protected void onOutgoingCallStarted(Context ctx, String number) {
-        EventBus.getDefault().post("str");
-        Log.d("OutgoingCallStarted", "number = " + number);
-        TimerService.addProcess("OutgoingCall: " + number);
-    }
+    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) { }
 
-    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
-        double duration = end.getTime() - start.getTime();
-        int iDuration = (int) (duration / 1000);
-        Log.d("OutgoingCallEnded", "number = " + number + ", duration = " + iDuration);
-        TimerService.addProcess("OutgoingCallInfo: phone = " + number + ", duration = " + iDuration);
-        TimerService.getInstance().sendCallReport(ctx, number, iDuration);
-    }
+    protected void onMissedCall(String number) { }
 
-    protected void onMissedCall(String number) {
-        TimerService.addProcess("MissedCallInfo: phone = " + number);
-        Log.d("MissCall", "number = " + number);
-    }
 
     //Deals with actual events
     //Incoming call-  goes from IDLE to RINGING when it rings, to OFFHOOK when it's answered, to IDLE when its hung up

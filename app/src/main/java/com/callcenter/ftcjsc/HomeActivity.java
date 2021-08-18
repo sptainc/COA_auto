@@ -2,44 +2,49 @@ package com.callcenter.ftcjsc;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import androidx.annotation.RequiresApi;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.text.TextUtils;
+
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import androidx.core.content.ContextCompat;
+import android.widget.Toast;
 
 import com.callcenter.ftcjsc.services.MessageEvent;
 import com.callcenter.ftcjsc.services.TimerService;
 import com.callcenter.ftcjsc.utils.Constants;
 import com.callcenter.ftcjsc.utils.RequestCodes;
 import com.callcenter.ftcjsc.utils.StorageKeys;
+import com.callcenter.ftcjsc.utils.Utils;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class HomeActivity extends AppCompatActivity {
     private final String TAG = "ActivityHOME";
-    private Boolean editable = false;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
 //        Log.d(TAG, "MessageEvent: " + event.message);
-        ((TextView)findViewById(R.id.tvProcess)).setText(event.message);
-        ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
+        ((TextView) findViewById(R.id.tvProcess)).setText(event.message);
+        ((ScrollView) findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
     }
 
     private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
@@ -55,10 +60,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Utils.updateConstants(this);
         Intent service = new Intent(this, TimerService.class);
         startService(service);
         addViews();
-        addListener();
         Log.d(TAG, "onCreate");
     }
 
@@ -67,8 +73,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         EventBus.getDefault().register(this);
-        ((TextView)findViewById(R.id.tvProcess)).setText(MessageEvent.globalMessage);
-        ((ScrollView)findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
+        ((TextView) findViewById(R.id.tvProcess)).setText(MessageEvent.globalMessage);
+        ((ScrollView) findViewById(R.id.scrollView)).fullScroll(View.FOCUS_DOWN);
         Log.d(TAG, "onResume");
     }
 
@@ -81,44 +87,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void addViews() {
-        ((TextView)findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + Constants.getIdm());
-        ((TextView)findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + Constants.getIds());
-        ((TextView)findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
-        ((EditText)findViewById(R.id.txtUserInput)).setText(Constants.getUserInput());
+        ((TextView) findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + Constants.getIds());
+        ((TextView) findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + Constants.getIdm());
+        ((TextView) findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
+        ((TextView) findViewById(R.id.txtUserInput)).setText(getResources().getText(R.string.user_input) + Constants.getUserInput());
     }
 
-    private void addListener() {
-        final EditText et = findViewById(R.id.txtUserInput);
-        final Button btn = findViewById(R.id.btnEdit);
-        final LinearLayout lo = findViewById(R.id.loEdit);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onClick(View view) {
-                if(!editable) {
-                    et.setEnabled(true);
-                    et.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-                    et.setSelection(et.getText().length());
-                    btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_checked));
-                    lo.setBackground(getResources().getDrawable(R.drawable.border_radius));
-                }else {
-                    String text = et.getText().toString();
-                    text = TextUtils.isEmpty(text) ? "" : text;
-                    et.setEnabled(false);
-                    Constants.setUserInput(text);
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString(StorageKeys.user_input.toString(), text);
-                    editor.apply();
-                    btn.setBackground(ContextCompat.getDrawable(HomeActivity.this, R.drawable.ic_edit));
-                    lo.setBackground(getResources().getDrawable(R.drawable.border_radius_disabled));
-                    TimerService.getInstance().startRunnable(null);
-                }
-                editable = !editable;
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(Constants.getIds() == null ? R.menu.menu_double : R.menu.menu_single, menu);
+        return true;
     }
 
     @Override
@@ -130,6 +109,72 @@ public class HomeActivity extends AppCompatActivity {
             TimerService.getInstance().startRunnable(null);
             addViews();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onItemSelected(item.getItemId());
+        return true;
+    }
+
+    private void onItemSelected(final int id) {
+        String title = id == R.id.edit_user_input ? "Edit user input" : "Edit ids prefix";
+        String defaultValue = id == R.id.edit_user_input ? Constants.getUserInput() : Constants.getIds();
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle(title);
+        alertDialog.setMessage("Input value less than 10 characters");
+        final EditText input = new EditText(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setPadding(15, 15, 15, 15);
+        input.setSingleLine();
+        lp.setMargins(5, 5, 5, 5);
+        input.setHint("Input value here");
+        input.setText(defaultValue);
+        input.setLayoutParams(lp);
+        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                input.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager inputMethodManager = (InputMethodManager) HomeActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
+            }
+        });
+        input.requestFocus();
+        alertDialog.setView(input);
+        alertDialog.setIcon(android.R.drawable.ic_menu_edit);
+
+        alertDialog.setPositiveButton("Update",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String text = input.getText().toString();
+                        if (id == R.id.edit_user_input) {
+                            Constants.setUserInput(text);
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString(StorageKeys.user_input.toString(), text);
+                            editor.apply();
+                        } else if (id == R.id.edit_ids) {
+                            Constants.setIds(text + Constants.getIdm());
+                        }
+                        addViews();
+                        TimerService.getInstance().startRunnable(null);
+                    }
+                });
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        TimerService.getInstance().startRunnable(null);
+                    }
+                });
+
+        alertDialog.show();
     }
 }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/edit_user_input"
+        android:icon="@android:drawable/toast_frame"
+        android:title="Edit user input"
+        app:showAsAction="withText"
+    />
+
+    <item android:id="@+id/edit_ids"
+        android:title="Edit ids prefix"
+        app:showAsAction="withText"
+        />
+</menu>

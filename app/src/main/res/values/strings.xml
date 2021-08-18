@@ -22,4 +22,5 @@
     <string name="location_per_status">Location permission</string>
     <string name="allow">ALLOW</string>
     <string name="callDetection">CallDetection</string>
+    <string name="user_input">User input:&#160;</string>
 </resources>
