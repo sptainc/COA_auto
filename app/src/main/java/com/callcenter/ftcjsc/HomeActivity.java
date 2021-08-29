@@ -1,43 +1,37 @@
 package com.callcenter.ftcjsc;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.callcenter.ftcjsc.services.MessageEvent;
 import com.callcenter.ftcjsc.services.TimerService;
-import com.callcenter.ftcjsc.utils.Constants;
-import com.callcenter.ftcjsc.utils.RequestCodes;
-import com.callcenter.ftcjsc.utils.StorageKeys;
-import com.callcenter.ftcjsc.utils.Utils;
-
+import com.callcenter.ftcjsc.services.StorageKeys;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends Activity {
     private final String TAG = "ActivityHOME";
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -61,9 +55,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Utils.updateConstants(this);
-        Intent service = new Intent(this, TimerService.class);
-        startService(service);
+        boolean isUpdate = TimerService.updateConstants(this);
+        if(isUpdate) {
+            Intent service = new Intent(this, TimerService.class);
+            startService(service);
+        }
         addViews();
         Log.d(TAG, "onCreate");
     }
@@ -87,94 +83,106 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void addViews() {
-        ((TextView) findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + Constants.getIds());
-        ((TextView) findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + Constants.getIdm());
-        ((TextView) findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + Constants.getGeneration());
-        ((TextView) findViewById(R.id.txtUserInput)).setText(getResources().getText(R.string.user_input) + Constants.getUserInput());
+        ((TextView) findViewById(R.id.lbIds)).setText(getResources().getText(R.string.ids) + TimerService.ids);
+        ((TextView) findViewById(R.id.lbIdm)).setText(getResources().getText(R.string.idm) + TimerService.idm);
+        ((TextView) findViewById(R.id.lbDeviceGen)).setText(getResources().getText(R.string.gen) + TimerService.generation);
+        ((TextView) findViewById(R.id.txtUserInput)).setText(getResources().getText(R.string.user_input) + TimerService.userInput);
+        findViewById(R.id.btnEditUserInput).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemSelected(view.getId());
+            }
+        });
+        String s = TimerService.ids;
+        Button btn = findViewById(R.id.btnEditUserInput);
+        if(s == null || TextUtils.isEmpty(s))  {
+            btn.setVisibility(View.VISIBLE);
+        }else {
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onItemSelected(view.getId());
+                }
+            });
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(Constants.getIds() == null ? R.menu.menu_double : R.menu.menu_single, menu);
-        return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult");
-        Log.d("onActivityResult", "requestCode: " + requestCode + ", resultCode: " + resultCode);
-        if (resultCode == RESULT_OK && requestCode == RequestCodes.onConfigurationsSuccess) {
-            TimerService.getInstance().startRunnable(null);
-            addViews();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onItemSelected(item.getItemId());
+        inflater.inflate(TimerService.ids == null ? R.menu.menu_double : R.menu.menu_single, menu);
         return true;
     }
 
     private void onItemSelected(final int id) {
-        String title = id == R.id.edit_user_input ? "Edit user input" : "Edit ids prefix";
-        String defaultValue = id == R.id.edit_user_input ? Constants.getUserInput() : Constants.getIds();
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle(title);
-        alertDialog.setMessage("Input value less than 10 characters");
-        final EditText input = new EditText(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setPadding(15, 15, 15, 15);
-        input.setSingleLine();
-        lp.setMargins(5, 5, 5, 5);
-        input.setHint("Input value here");
-        input.setText(defaultValue);
-        input.setLayoutParams(lp);
-        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                input.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        InputMethodManager inputMethodManager = (InputMethodManager) HomeActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-                    }
-                });
+        try {
+            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+            final SharedPreferences.Editor editor = preferences.edit();
+
+            String title = id == R.id.btnEditUserInput ? "Edit user input" : "Edit ids prefix";
+            String key = id == R.id.btnEditUserInput ? StorageKeys.user_input.toString() : StorageKeys.ids_input.toString();
+            String defaultValue = preferences.getString(key, "");
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle(title);
+            alertDialog.setMessage("Input value less than 10 characters");
+            final EditText input = new EditText(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            input.setPadding(15, 15, 15, 15);
+            input.setSingleLine();
+            lp.setMargins(5, 5, 5, 5);
+            input.setHint("Input value here");
+            input.setText(defaultValue);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                input.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             }
-        });
-        input.requestFocus();
-        alertDialog.setView(input);
-        alertDialog.setIcon(android.R.drawable.ic_menu_edit);
-
-        alertDialog.setPositiveButton("Update",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String text = input.getText().toString();
-                        if (id == R.id.edit_user_input) {
-                            Constants.setUserInput(text);
-                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString(StorageKeys.user_input.toString(), text);
-                            editor.apply();
-                        } else if (id == R.id.edit_ids) {
-                            Constants.setIds(text + Constants.getIdm());
+            input.setLayoutParams(lp);
+            input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    input.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            InputMethodManager inputMethodManager = (InputMethodManager) HomeActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
                         }
-                        addViews();
-                        TimerService.getInstance().startRunnable(null);
-                    }
-                });
-        alertDialog.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                        TimerService.getInstance().startRunnable(null);
-                    }
-                });
+                    });
+                }
+            });
+            input.requestFocus();
+            alertDialog.setView(input);
+            alertDialog.setIcon(android.R.drawable.ic_menu_edit);
 
-        alertDialog.show();
+            alertDialog.setPositiveButton("Update",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String text = input.getText().toString();
+                            if (id == R.id.btnEditUserInput) {
+                                TimerService.userInput = text;
+                                editor.putString(StorageKeys.user_input.toString(), text);
+                                editor.apply();
+                            } else if (id == R.id.btnEditIds) {
+                                TimerService.ids = text + TimerService.idm;
+                                editor.putString(StorageKeys.ids_input.toString(), text);
+                                editor.apply();
+                            }
+                            addViews();
+                            TimerService.getInstance().startRunnable(null);
+                        }
+                    });
+            alertDialog.setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            TimerService.getInstance().startRunnable(null);
+                        }
+                    });
+            alertDialog.show();
+        }catch (Exception e) {
+            Log.d("Crash", e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
 

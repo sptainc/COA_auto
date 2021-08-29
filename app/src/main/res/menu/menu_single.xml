@@ -4,6 +4,5 @@
     <item android:id="@+id/edit_user_input"
         android:icon="@android:drawable/toast_frame"
         android:title="Edit user input"
-        app:showAsAction="withText"
     />
 </menu>

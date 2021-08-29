@@ -1,7 +1,5 @@
 package com.callcenter.ftcjsc.services;
 
-import java.lang.reflect.Method;
-import java.sql.Time;
 import java.util.Date;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,15 +8,8 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.KeyEvent;
-
-import com.callcenter.ftcjsc.utils.Constants;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class CallManager extends BroadcastReceiver {
     public static boolean IS_IDLE = true;

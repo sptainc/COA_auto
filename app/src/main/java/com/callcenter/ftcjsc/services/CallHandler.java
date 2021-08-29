@@ -10,24 +10,11 @@ import android.view.KeyEvent;
 
 import androidx.annotation.RequiresApi;
 
-import com.callcenter.ftcjsc.utils.Constants;
-
 import java.lang.reflect.Method;
 import java.util.Date;
 
 
 public class CallHandler extends CallManager {
-    public void acceptCall(Context context) {
-        Intent buttonUp = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        buttonUp.putExtra(Intent.EXTRA_KEY_EVENT,
-                new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
-        try {
-            context.sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void endCall(Context context) {
         try {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -71,15 +58,16 @@ public class CallHandler extends CallManager {
     }
 
     protected void onOutgoingCallStarted(final Context ctx, String number) {
-        Log.d("OutgoingCallStarted", "number = " + number + ", duration = " + Constants.OUTGOING_CALL_TIME);
+        Log.d("OutgoingCallStarted", "number = " + number + ", duration = " + TimerService.OUTGOING_CALL_TIME);
         TimerService.addProcess("OutgoingCall: " + number);
         new Handler().postDelayed(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void run() {
+                Log.d("OutgoingCallEnded", "duration = " + TimerService.OUTGOING_CALL_TIME);
                 CallHandler.endCall(ctx);
             }
-        }, Constants.OUTGOING_CALL_TIME * 1000);
+        }, TimerService.OUTGOING_CALL_TIME * 1000);
     }
 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
