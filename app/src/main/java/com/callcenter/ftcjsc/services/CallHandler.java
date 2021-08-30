@@ -30,7 +30,6 @@ public class CallHandler extends CallManager {
 
         } catch (Exception e) {
             e.printStackTrace();
-            TimerService.getInstance().startRunnable(context);
         }
     }
     protected void onIncomingCallStarted(final Context ctx, String number)  {
@@ -44,7 +43,6 @@ public class CallHandler extends CallManager {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("AutoAnswerFailure","throw error on auto answer: " + e.getMessage());
-            TimerService.getInstance().startRunnable(ctx);
         }
     }
 
@@ -54,7 +52,7 @@ public class CallHandler extends CallManager {
         int iDuration = (int) (duration / 1000);
 
         TimerService.addProcess("IncomingCallInfo: phone = " + number + ", duration = " + iDuration);
-        TimerService.getInstance().sendCallReport(ctx, number, iDuration);
+        TimerService.getInstance().sendCallReport( number, iDuration);
     }
 
     protected void onOutgoingCallStarted(final Context ctx, String number) {
@@ -75,7 +73,7 @@ public class CallHandler extends CallManager {
         int iDuration = (int) (duration / 1000);
         Log.d("OutgoingCallEnded", "number = " + number + ", duration = " + iDuration);
         TimerService.addProcess("OutgoingCallInfo: phone = " + number + ", duration = " + iDuration);
-        TimerService.getInstance().sendCallReport(ctx, number, iDuration);
+        TimerService.getInstance().sendCallReport( number, iDuration);
     }
 
     protected void onMissedCall(String number) {

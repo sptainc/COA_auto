@@ -94,10 +94,10 @@ public class HomeActivity extends Activity {
             }
         });
         String s = TimerService.ids;
-        Button btn = findViewById(R.id.btnEditUserInput);
+
+        Button btn = findViewById(R.id.btnEditIds);
         if(s == null || TextUtils.isEmpty(s))  {
             btn.setVisibility(View.VISIBLE);
-        }else {
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -168,14 +168,12 @@ public class HomeActivity extends Activity {
                                 editor.apply();
                             }
                             addViews();
-                            TimerService.getInstance().startRunnable(null);
                         }
                     });
             alertDialog.setNegativeButton("Cancel",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
-                            TimerService.getInstance().startRunnable(null);
                         }
                     });
             alertDialog.show();

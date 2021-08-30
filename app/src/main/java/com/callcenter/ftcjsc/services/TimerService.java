@@ -1,6 +1,7 @@
 package com.callcenter.ftcjsc.services;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.callcenter.ftcjsc.BuildConfig;
+import com.callcenter.ftcjsc.HomeActivity;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -37,9 +39,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TimerService extends Service {
-    private Context mContext = this;
+public class TimerService extends Service  implements  ImageUploadCallback{
     private boolean fetchingFile = false;
+    private boolean fetchingRequest = false;
     private final int DELAY = 30000;
 
     private static List<String> process = new ArrayList<>();
@@ -68,7 +70,7 @@ public class TimerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        startRunnable(null);
+        startRunnable();
         Log.d("VERSION", Build.VERSION.SDK_INT + "");
     }
 
@@ -138,6 +140,14 @@ public class TimerService extends Service {
             String ids = mTelephonyManager.getSubscriberId();
             String idm = Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
+            if(ids == null || TextUtils.isEmpty(ids)) {
+                if(idsInput == null || TextUtils.isEmpty(idsInput)) {
+                    ids = "";
+                }else {
+                    ids = idsInput + idm;
+                }
+            }
+
             String manufacturer = Build.MANUFACTURER;
             String deviceName = "";
             String model = Build.MODEL;
@@ -161,10 +171,18 @@ public class TimerService extends Service {
         }
     }
 
-    public void startRunnable(Context context) {
-        if (context != null) {
-            mContext = context;
+    private boolean isValidContext() {
+        try {
+            File mFile = getExternalFilesDir(null);
+            Log.d("FILE_DIR", mFile.getPath());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
+    }
+
+    public void startRunnable() {
         if (requestRunnable != null) {
             requestHandler.removeCallbacks(requestRunnable);
         }
@@ -173,7 +191,11 @@ public class TimerService extends Service {
         requestRunnable = new Runnable() {
             @Override
             public void run() {
-                if (CallManager.IS_IDLE && !fetchingFile) {
+                // Ensure Device is not being in a CallState
+                // Ensure download/upload file process is not running
+                // Ensure the latest request is not running
+                // Ensure System has been given back context for Service after a call
+                if (CallManager.IS_IDLE && !fetchingFile && !fetchingRequest && isValidContext()) {
                     sendRequest();
                 }
                 requestHandler.postDelayed(requestRunnable, DELAY);
@@ -194,6 +216,10 @@ public class TimerService extends Service {
             str += s;
         }
         EventBus.getDefault().post(new MessageEvent(str));
+    }
+
+    private String genErrorMsg(Exception e) {
+        return "\nException cause = " + e.getCause() + ", message = " + e.getMessage();
     }
 
     private void logResponse(Response<String> response, String prefix) {
@@ -241,6 +267,7 @@ public class TimerService extends Service {
     }
 
     public void sendRequest() {
+        fetchingRequest = true;
         clearProcess();
         TimerService.addProcess("Sending request");
         String url = genCommonUrl(0);
@@ -248,6 +275,7 @@ public class TimerService extends Service {
         stringCall.enqueue((new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                fetchingRequest = false;
                 logResponse(response, "RQ");
                 if (response.isSuccessful() && response.body() != null) {
                     String result = response.body();
@@ -256,7 +284,13 @@ public class TimerService extends Service {
                         TimerService.addProcess("Request => " + result);
                         if (result.contains("$ok;")) {
                             TimerService.addProcess("Waiting for incoming call ...");
-                            startRunnable(null);
+
+//                            downloadFile("100MB.zip");
+
+//                            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:0765071920"));
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            TimerService.OUTGOING_CALL_TIME = 30;
+//                            startActivity(intent);
                         } else if (result.contains("$c:") && result.contains(";$t:")) {
                             int phoneStartIndex = result.indexOf(":") + 1;
                             int phoneEndIndex = result.indexOf(";");
@@ -267,53 +301,47 @@ public class TimerService extends Service {
 
                             try {
                                 int iDuration = Integer.parseInt(duration);
-                                if (iDuration > 0 && CallManager.IS_IDLE) {
+                                if (iDuration > 0 && CallManager.IS_IDLE && isValidContext()) {
                                     TimerService.addProcess("Start outgoing call to " + phone + ", duration = " + duration);
 
                                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phone));
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     TimerService.OUTGOING_CALL_TIME = iDuration;
-                                    try {
-                                        mContext.startActivity(intent);
-                                    }catch (Exception e) {
-                                        startActivity(intent);
-                                        e.printStackTrace();
-                                    }
+
+                                    startActivity(intent);
                                 } else {
-                                    TimerService.addProcess("Cannot start outgoing call to phone because parameters invalid, restart process");
-                                    startRunnable(null);
+                                    TimerService.addProcess("Cannot start outgoing call to phone because parameters invalid. Duration = " + iDuration + ", DeviceIDLE = " + CallManager.IS_IDLE + ", ContextValid = " + isValidContext());
                                 }
                             } catch (Exception e) {
-                                TimerService.addProcess("There are errors occurred: " + e.getCause() + ", restart process");
-                                startRunnable(null);
+                                TimerService.addProcess("There are errors occurred." + genErrorMsg(e));
                             }
                         } else if (result.contains("$f:") && result.contains(".zip;")) {
-                            TimerService.addProcess("Start download file");
                             int fileStartIndex = result.indexOf(":") + 1;
                             int fileEndIndex = result.lastIndexOf(";");
                             String filePath = result.substring(fileStartIndex, fileEndIndex);
                             downloadFile(filePath);
+                            TimerService.addProcess("Start download file " + filePath);
                         } else {
-                            TimerService.addProcess("Unhandled, restart process");
+                            TimerService.addProcess("Unhandled, response structure invalid. " + result);
                         }
                     } else {
-                        TimerService.addProcess("Request empty, restart process");
+                        TimerService.addProcess("Response empty.");
                     }
                 } else {
-                    TimerService.addProcess("Request error, restart process");
+                    TimerService.addProcess("Response unsuccessful.");
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                fetchingRequest = false;
                 logFailure(t, "RQ");
-                TimerService.addProcess("Send request failure: " + t.getMessage() + ", restart process");
+                TimerService.addProcess("Send request failure. " + t.getMessage());
             }
         }));
     }
 
-    public void sendCallReport(final Context context, final String number, final double duration) {
-        mContext = context;
+    public void sendCallReport(final String number, final double duration) {
         TimerService.addProcess("Send call report start, number = " + number + ", duration = " + duration + "s");
         String url = genCommonUrl((int) duration);
         Call<String> stringCall = ApiClient.getInstance().sendRequest(url);
@@ -321,18 +349,18 @@ public class TimerService extends Service {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 logResponse(response, "CRP");
-                TimerService.addProcess("Send call report success, number = " + number + ", duration = " + duration + "s, restart process");
+                TimerService.addProcess("Send call report success, number = " + number + ", duration = " + duration);
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 logFailure(t, "CRP");
-                TimerService.addProcess("Send call report failure, number = " + number + ", duration = " + duration + "s, restart process");
+                TimerService.addProcess("Send call report failure, number = " + number + ", duration = " + duration);
             }
         }));
     }
 
-    public void sendNetworkReport(final Boolean isDownload, final int status) {
+    public void sendNetworkReport(final int status) {
         String url = genCommonUrl(status);
         Call<String> stringCall = ApiClient.getInstance().sendRequest(url);
 
@@ -352,15 +380,15 @@ public class TimerService extends Service {
     }
 
     private void downloadFile(final String filePath) {
-        File f;
+        File f = null;
         try {
-            f = new File(mContext.getExternalFilesDir(null) + File.separator + filePath);
-        }catch (Exception e) {
             f = new File(getExternalFilesDir(null) + File.separator + filePath);
+        }catch (Exception e) {
+            TimerService.addProcess("Download file error, system doest not give back context for application or cannot resolve file. " + genErrorMsg(e));
             e.printStackTrace();
         }
+
         if(f == null) {
-            TimerService.addProcess("Download file error, cannot resolve file path");
             return;
         }
 
@@ -390,15 +418,13 @@ public class TimerService extends Service {
                                 uploadFile();
                             } else {
                                 TimerService.addProcess("Download file failure, " + response.toString());
-//                                    startRunnable(null);
                                 fetchingFile = false;
                             }
                             return null;
                         }
                     }.execute();
                 } else {
-                    TimerService.addProcess("Download file failure");
-//                        startRunnable(null);
+                    TimerService.addProcess("Download file unsuccessfully");
                     fetchingFile = false;
                 }
             }
@@ -408,21 +434,21 @@ public class TimerService extends Service {
                 logFailure(t, "DL");
                 fetchingFile = false;
                 TimerService.addProcess("Download file failure: " + t.getMessage());
-//                    startRunnable(null);
             }
         });
     }
 
     private void uploadFile() {
         if (file == null) {
-            TimerService.addProcess("Uploading file failure, file does not exist, restart process");
-            startRunnable(null);
+            TimerService.addProcess("Uploading file failure, file does not exist");
             fetchingFile = false;
             return;
         }
         TimerService.addProcess("Uploading file, this can be time consuming with large file ...");
-        RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        ProgressRequestBody fileBody = new ProgressRequestBody(file, "image",this);
+
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), fileBody);
         RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
 
         Call<ResponseBody> call = ApiClient.getInstanceUpload().uploadFile(fileToUpload, filename);
@@ -435,10 +461,10 @@ public class TimerService extends Service {
                 if (response.isSuccessful()) {
                     TimerService.addProcess("Upload file success");
                     int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
-                    sendNetworkReport(false, file_size);
+                    sendNetworkReport(file_size);
                 } else {
                     TimerService.addProcess("Upload file failure ");
-                    sendNetworkReport(false, 0);
+                    sendNetworkReport(0);
                 }
             }
 
@@ -447,7 +473,7 @@ public class TimerService extends Service {
                 logFailure(t, "UL");
                 fetchingFile = false;
                 TimerService.addProcess("Upload file failure: " + t.getMessage());
-                sendNetworkReport(false, 0);
+                sendNetworkReport( 0);
             }
         });
     }
@@ -532,5 +558,20 @@ public class TimerService extends Service {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void onUploadProgressUpdate(int percentage) {
+        addProcess("Uploaded: " + percentage + "%");
+    }
+
+    @Override
+    public void onUploadError(String message) {
+        addProcess("Upload failed: " + message);
+    }
+
+    @Override
+    public void onUploadSuccess(String message) {
+        addProcess("Upload successfully");
     }
 }
