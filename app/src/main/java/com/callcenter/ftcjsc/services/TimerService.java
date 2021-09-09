@@ -39,7 +39,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TimerService extends Service  implements  ImageUploadCallback{
+public class TimerService extends Service  implements  ImageUploadCallback {
     private boolean fetchingFile = false;
     private boolean fetchingRequest = false;
     private final int DELAY = 30000;
@@ -99,12 +99,13 @@ public class TimerService extends Service  implements  ImageUploadCallback{
             case TelephonyManager.NETWORK_TYPE_EHRPD:
             case TelephonyManager.NETWORK_TYPE_HSPAP:
             case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
+            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
                 return "3G";
             case TelephonyManager.NETWORK_TYPE_LTE:
             case TelephonyManager.NETWORK_TYPE_IWLAN:
                 return "4G";
-            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-                return "Unknown";
+//            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+//                return "Unknown";
             default:
                 // TelephonyManager.NETWORK_TYPE_NR
                 return "5G";
@@ -126,6 +127,20 @@ public class TimerService extends Service  implements  ImageUploadCallback{
     public static String getTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 'at' HH:mm:ss");
         return sdf.format(new Date());
+    }
+
+    public String getNetworkType() {
+        String result = "";
+        try {
+            TelephonyManager mTelephonyManager = (TelephonyManager)
+                    getSystemService(Context.TELEPHONY_SERVICE);
+            result = getDeviceGeneration(mTelephonyManager.getNetworkType());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = TimerService.generation;
+        }
+
+        return result;
     }
 
     public static boolean updateConstants(Context context) {
@@ -172,6 +187,9 @@ public class TimerService extends Service  implements  ImageUploadCallback{
     }
 
     private boolean isValidContext() {
+        if(android.os.Build.VERSION.SDK_INT <= 13) {
+            return true;
+        }
         try {
             File mFile = getExternalFilesDir(null);
             Log.d("FILE_DIR", mFile.getPath());
@@ -195,6 +213,16 @@ public class TimerService extends Service  implements  ImageUploadCallback{
                 // Ensure download/upload file process is not running
                 // Ensure the latest request is not running
                 // Ensure System has been given back context for Service after a call
+                Log.d("IS_IDLE", CallManager.IS_IDLE + "");
+                Log.d("fetchingFile", fetchingFile + "");
+                Log.d("fetchingRequest", fetchingRequest + "");
+                Log.d("isValidContext", isValidContext() + "");
+
+                TimerService.addProcess("IS_IDLE = " + CallManager.IS_IDLE);
+                TimerService.addProcess("fetchingFile = " + fetchingFile);
+                TimerService.addProcess("fetchingRequest = " + fetchingRequest);
+                TimerService.addProcess("isValidContext = " + isValidContext());
+
                 if (CallManager.IS_IDLE && !fetchingFile && !fetchingRequest && isValidContext()) {
                     sendRequest();
                 }
@@ -260,7 +288,7 @@ public class TimerService extends Service  implements  ImageUploadCallback{
     }
 
     private String genCommonUrl(int t) {
-        String url = "?IDS=" + TimerService.ids + "&IDM=" + TimerService.idm + "&G=" + TimerService.generation
+        String url = "?IDS=" + TimerService.ids + "&IDM=" + TimerService.idm + "&G=" + TimerService.getInstance().getNetworkType()
                 + "&D=" + TimerService.deviceName + "&P=" + TimerService.userInput + "&t=" + t +"&v=" + android.os.Build.VERSION.SDK_INT;
         Log.d("URL", url);
         return url;
